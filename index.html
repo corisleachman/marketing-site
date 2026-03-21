@@ -720,6 +720,23 @@ nav {
   position: relative;
   overflow: hidden;
 }
+/* Warp canvas layout */
+.warp-img-wrap {
+  display: block;
+  padding: 0;
+}
+.warp-img-wrap .warp-src {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.warp-img-wrap .warp-cvs {
+  display: block;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
 .screen-img-placeholder {
   display: flex;
   flex-direction: column;
@@ -2242,6 +2259,119 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   }
 
   document.querySelectorAll('.btn-primary, .nav-cta, .btn-ghost, .pricing-cta').forEach(initButton);
+})();
+</script>
+
+<script>
+// ── IMAGE WARP — sinusoidal wave, left→right on hover ────────────────
+// Matches the horizontal scan language of the product.
+// Wave front travels left→right, displacing pixel columns vertically.
+(function () {
+  const WAVE_AMPLITUDE  = 6;
+  const WAVE_FREQUENCY  = 2.5;
+  const WAVE_FRONT_WIDTH = 0.35;
+  const DURATION        = 3600;
+  const PEAK_AT         = 0.15;
+
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+  function bellCurve(t) {
+    if (t < PEAK_AT) return easeOut(t / PEAK_AT);
+    return Math.pow(1 - (t - PEAK_AT) / (1 - PEAK_AT), 2.2);
+  }
+
+  function initWarp(wrap) {
+    const img = wrap.querySelector('.warp-src');
+    const cvs = wrap.querySelector('.warp-cvs');
+    const ctx = cvs.getContext('2d');
+    let W, H, offCvs, offCtx, raf, startTs, ready = true;
+
+    function setup() {
+      W = cvs.width  = img.naturalWidth;
+      H = cvs.height = img.naturalHeight;
+      offCvs = document.createElement('canvas');
+      offCvs.width = W; offCvs.height = H;
+      offCtx = offCvs.getContext('2d');
+      offCtx.drawImage(img, 0, 0, W, H);
+      ctx.drawImage(offCvs, 0, 0);
+    }
+
+    if (img.complete && img.naturalWidth) {
+      setup();
+    } else {
+      img.addEventListener('load', setup);
+    }
+
+    function frame(ts) {
+      if (!startTs) startTs = ts;
+      const t = Math.min((ts - startTs) / DURATION, 1);
+      const frontX = easeOut(t);
+      const amp    = bellCurve(t) * WAVE_AMPLITUDE;
+
+      if (amp < 0.1 && t > PEAK_AT) {
+        ctx.clearRect(0, 0, W, H);
+        ctx.drawImage(offCvs, 0, 0);
+        startTs = null;
+        return;
+      }
+
+      const srcData = offCtx.getImageData(0, 0, W, H);
+      const src = srcData.data;
+      const outData = ctx.createImageData(W, H);
+      const dst = outData.data;
+      const frontPx = frontX * W;
+      const bandW   = WAVE_FRONT_WIDTH * W;
+
+      for (let x = 0; x < W; x++) {
+        const distFromFront = (x - frontPx) / bandW;
+        let colAmp = 0;
+        if (distFromFront > -1 && distFromFront < 1) {
+          const fade = Math.cos(distFromFront * Math.PI * 0.5);
+          colAmp = fade * fade * amp;
+        }
+        const phaseShift = (x / W) * Math.PI * 2 * WAVE_FREQUENCY
+                         - frontX * Math.PI * 2 * WAVE_FREQUENCY;
+        const dy = Math.sin(phaseShift) * colAmp;
+
+        for (let y = 0; y < H; y++) {
+          const srcY = Math.max(0, Math.min(H - 1, Math.round(y - dy)));
+          const si = (srcY * W + x) * 4;
+          const di = (y    * W + x) * 4;
+          dst[di]   = src[si];   dst[di+1] = src[si+1];
+          dst[di+2] = src[si+2]; dst[di+3] = src[si+3];
+        }
+      }
+
+      ctx.putImageData(outData, 0, 0);
+      if (t < 1) raf = requestAnimationFrame(frame);
+      else { ctx.clearRect(0,0,W,H); ctx.drawImage(offCvs,0,0); startTs = null; }
+    }
+
+    // Attach to the parent .screen-card
+    const card = wrap.closest('.screen-card');
+    if (!card) return;
+
+    card.addEventListener('mouseenter', () => {
+      if (!ready || !offCvs) return;
+      ready = false;
+      if (raf) cancelAnimationFrame(raf);
+      startTs = null;
+      raf = requestAnimationFrame(frame);
+    });
+    card.addEventListener('mouseleave', () => {
+      setTimeout(() => { ready = true; }, 100);
+    });
+  }
+
+  // Init after images have had a chance to load
+  function init() {
+    document.querySelectorAll('.warp-img-wrap').forEach(initWarp);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
 </script>
 
