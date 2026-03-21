@@ -494,40 +494,159 @@ nav {
 }
 .step-body { font-size: 14px; color: var(--tm); line-height: 1.65; }
 
-/* ── FEATURES ── */
+/* ── FEATURES — bento grid ── */
 .features { padding: 100px 0; }
-.features-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  align-items: start;
+.features-header {
+  text-align: center;
+  margin-bottom: 64px;
 }
-.features-left .section-body { margin-bottom: 40px; }
-.feature-list {
+.features-header .section-body {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto;
+  gap: 14px;
+}
+
+/* Card base */
+.bento-card {
+  background: rgba(13,9,20,0.35);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--b);
+  border-radius: 18px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.bento-card:hover {
+  border-color: var(--b2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+/* Subtle top-edge light catch */
+.bento-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  pointer-events: none;
+}
+
+/* Grid placement — 12-column layout */
+/* Row 1: two wide cards */
+.bento-card.b1 { grid-column: span 7; }
+.bento-card.b2 { grid-column: span 5; }
+/* Row 2: three equal cards */
+.bento-card.b3 { grid-column: span 4; }
+.bento-card.b4 { grid-column: span 4; }
+.bento-card.b5 { grid-column: span 4; }
+/* Row 3: one narrow + one wide */
+.bento-card.b6 { grid-column: span 5; }
+.bento-card.b7 { grid-column: span 7; }
+
+/* Featured card — pink tint */
+.bento-card.featured {
+  border-color: rgba(255,20,147,0.2);
+  background: rgba(255,20,147,0.06);
+}
+.bento-card.featured:hover {
+  border-color: rgba(255,20,147,0.35);
+  box-shadow: 0 8px 32px rgba(255,20,147,0.1);
+}
+
+/* Icon */
+.bento-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--s2);
+  border: 1px solid var(--b2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+.bento-icon svg {
+  width: 18px; height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bento-icon.pink  { background: rgba(255,20,147,0.1);  border-color: rgba(255,20,147,0.2);  color: var(--pink); }
+.bento-icon.cyan  { background: rgba(0,212,255,0.08);  border-color: rgba(0,212,255,0.18);  color: var(--cyan); }
+.bento-icon.green { background: rgba(100,220,120,0.1); border-color: rgba(100,220,120,0.2); color: var(--green); }
+.bento-icon.amber { background: rgba(255,157,66,0.1);  border-color: rgba(255,157,66,0.2);  color: var(--amber); }
+
+.bento-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--t);
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+.bento-body {
+  font-size: 13px;
+  color: var(--tm);
+  line-height: 1.6;
+}
+
+/* Tag in top-right corner of card */
+.bento-tag {
+  position: absolute;
+  top: 20px; right: 20px;
+}
+
+/* Large stat / callout cards */
+.bento-stat {
+  font-family: 'Outfit', sans-serif;
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 8px;
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.bento-stat-label {
+  font-size: 13px;
+  color: var(--td);
+  line-height: 1.5;
+}
+
+/* Checklist inside a card */
+.bento-checklist {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 9px;
+  margin-top: 16px;
 }
-.feature-item {
+.bento-check-item {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 16px 18px;
-  background: var(--s);
-  border: 1px solid var(--b);
-  border-radius: 10px;
-  transition: border-color 0.2s, background 0.2s;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--tm);
 }
-.feature-item:hover { border-color: var(--b2); background: var(--s2); }
-.feature-dot {
-  width: 8px; height: 8px;
+.bento-check-item .dot {
+  width: 5px; height: 5px;
   border-radius: 50%;
   background: var(--grad);
   flex-shrink: 0;
-  margin-top: 6px;
-  box-shadow: 0 0 8px var(--glow-pink);
+  box-shadow: 0 0 6px var(--glow-pink);
 }
-.feature-text { font-size: 14px; color: var(--t); line-height: 1.5; }
+
 .feature-tag {
   display: inline-block;
   padding: 2px 7px;
@@ -542,48 +661,6 @@ nav {
 .tag-pro  { background: rgba(255,20,147,0.15); color: var(--pink); border: 1px solid rgba(255,20,147,0.2); }
 .tag-soon { background: rgba(0,212,255,0.1);   color: var(--cyan); border: 1px solid rgba(0,212,255,0.18); }
 .tag-free { background: rgba(100,220,120,0.1); color: var(--green); border: 1px solid rgba(100,220,120,0.2); }
-
-.included-panel {
-  background: var(--s);
-  border: 1px solid var(--b2);
-  border-radius: 16px;
-  padding: 32px;
-  position: sticky;
-  top: 100px;
-}
-.included-label {
-  font-family: 'Outfit', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--td);
-  margin-bottom: 20px;
-}
-.included-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.included-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  color: var(--tm);
-}
-.included-item .check {
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  background: rgba(100,220,120,0.12);
-  border: 1px solid rgba(100,220,120,0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 10px;
-  color: var(--green);
-}
 
 /* ── PRODUCT VISUALS ── */
 .screens { padding: 100px 0; }
@@ -1140,11 +1217,20 @@ footer {
   .proof-grid { grid-template-columns: 1fr; }
   footer { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
   .footer-links { flex-wrap: wrap; gap: 16px; }
+  .bento-grid { grid-template-columns: 1fr 1fr; }
+  .bento-card.b1, .bento-card.b2, .bento-card.b3,
+  .bento-card.b4, .bento-card.b5, .bento-card.b6,
+  .bento-card.b7 { grid-column: span 2; }
+  .bento-card.b3, .bento-card.b4, .bento-card.b5 { grid-column: span 1; }
   .section, .steps, .features, .screens, .pricing, .proof { padding: 60px 0; }
 }
 
 @media (max-width: 480px) {
   .screen-card { width: 100%; }
+  .bento-grid { grid-template-columns: 1fr; }
+  .bento-card.b1, .bento-card.b2, .bento-card.b3,
+  .bento-card.b4, .bento-card.b5, .bento-card.b6,
+  .bento-card.b7 { grid-column: span 1; }
   .hero { padding: 80px 20px 48px; }
 }
 </style>
@@ -1267,67 +1353,82 @@ footer {
   <!-- FEATURES -->
   <section class="features" id="features">
     <div class="container">
-      <div class="features-grid">
-        <div class="features-left reveal">
-          <div class="section-label">The system</div>
-          <h2 class="section-headline">An effortless system for consistent outreach.</h2>
-          <p class="section-body">This tool does one thing. It stops your outreach from going quiet. No pipelines. No confusing dashboards. No CRM to set up and maintain.</p>
-          <div class="feature-list" style="margin-top:32px;">
-            <div class="feature-item">
-              <div class="feature-dot"></div>
-              <div class="feature-text">Tracks who you've contacted and when</div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-dot"></div>
-              <div class="feature-text">Tells you what needs to happen next</div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-dot"></div>
-              <div class="feature-text">Makes the next action effortless, so momentum never disappears</div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-dot"></div>
-              <div class="feature-text">Surfaces conversations and replies in one place</div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-dot"></div>
-              <div class="feature-text">Suggests the right follow-up — value drop, check-in, or chase — at the right moment <span class="feature-tag tag-pro">Pro</span></div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-dot"></div>
-              <div class="feature-text">AI-drafted emails that sound like you <span class="feature-tag tag-pro">Pro</span></div>
-            </div>
+
+      <div class="features-header reveal">
+        <div class="section-label">The system</div>
+        <h2 class="section-headline">Everything you need.<br>Nothing you don't.</h2>
+        <p class="section-body">No pipelines. No confusing dashboards. No CRM to set up. Just a calm, focused tool that keeps your outreach moving.</p>
+      </div>
+
+      <div class="bento-grid reveal">
+
+        <!-- B1: Wide — Follow-up tracking, with checklist -->
+        <div class="bento-card b1" data-scan="pink">
+          <div class="bento-icon pink">
+            <svg viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div class="bento-title">Always know who needs a reply</div>
+          <p class="bento-body">Follow-ups surface automatically when they're due. The queue is always prioritised — you just work through it.</p>
+          <div class="bento-checklist">
+            <div class="bento-check-item"><div class="dot"></div><span>Follow-up queue with automatic timing</span></div>
+            <div class="bento-check-item"><div class="dot"></div><span>Prospect status tracked across every stage</span></div>
+            <div class="bento-check-item"><div class="dot"></div><span>Conversations and replies in one place</span></div>
           </div>
         </div>
-        <div class="reveal">
-          <div class="included-panel">
-            <div class="included-label">What's included</div>
-            <div class="included-list">
-              <div class="included-item"><div class="check">✓</div><span>Gmail integration</span></div>
-              <div class="included-item"><div class="check">✓</div><span>Campaign & prospect tracking</span></div>
-              <div class="included-item"><div class="check">✓</div><span>Follow-up queue & reminders</span></div>
-              <div class="included-item"><div class="check">✓</div><span>Prospect status tracking</span></div>
-              <div class="included-item"><div class="check">✓</div><span>One-click prospect qualification</span></div>
-              <div class="included-item"><div class="check">✓</div><span>Your data stays yours</span></div>
-              <div class="included-item">
-                <div class="check">✓</div>
-                <span>Unlimited campaigns <span class="feature-tag tag-pro">Pro</span></span>
-              </div>
-              <div class="included-item">
-                <div class="check">✓</div>
-                <span>AI-drafted emails <span class="feature-tag tag-pro">Pro</span></span>
-              </div>
-              <div class="included-item">
-                <div class="check">✓</div>
-                <span>Auto-scheduled sending <span class="feature-tag tag-pro">Pro</span></span>
-              </div>
-              <div class="included-item">
-                <div class="check" style="color:var(--cyan);background:rgba(0,212,255,0.08);border-color:rgba(0,212,255,0.2);">→</div>
-                <span>Microsoft Outlook <span class="feature-tag tag-soon">Soon</span></span>
-              </div>
-            </div>
+
+        <!-- B2: Narrow — Gmail native -->
+        <div class="bento-card b2" data-scan="cyan">
+          <div class="bento-icon cyan">
+            <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
           </div>
+          <div class="bento-title">Sends from your Gmail</div>
+          <p class="bento-body">Emails go out from your own address. Replies come back to your inbox. Nothing looks automated.</p>
         </div>
+
+        <!-- B3: Third — Prospect review -->
+        <div class="bento-card b3" data-scan="cyan">
+          <div class="bento-icon cyan">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </div>
+          <div class="bento-title">Review before anything sends</div>
+          <p class="bento-body">Every draft waits for your approval. Nothing sends without your eyes on it first.</p>
+        </div>
+
+        <!-- B4: Third — Stat card -->
+        <div class="bento-card b4">
+          <div class="bento-stat">100%</div>
+          <div class="bento-stat-label">Your data, your account, your outreach. We don't share it, sell it, or use it to train anything.</div>
+        </div>
+
+        <!-- B5: Third — LinkedIn -->
+        <div class="bento-card b5" data-scan="pink">
+          <div class="bento-icon amber">
+            <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </div>
+          <div class="bento-title">LinkedIn alongside email</div>
+          <p class="bento-body">Track connection requests and warm-up activity in the same view as your email outreach.</p>
+        </div>
+
+        <!-- B6: Narrow — AI drafts -->
+        <div class="bento-card b6 featured" data-scan="pink">
+          <div class="bento-tag"><span class="feature-tag tag-pro">Pro</span></div>
+          <div class="bento-icon pink">
+            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><path d="M18 2v6M21 5h-6"/></svg>
+          </div>
+          <div class="bento-title">AI drafts that sound like you</div>
+          <p class="bento-body">Value drop, check-in, follow-up, post-meeting — the right message suggested at the right moment. You approve. It sends.</p>
+        </div>
+
+        <!-- B7: Wide — Auto scheduling -->
+        <div class="bento-card b7 featured" data-scan="cyan">
+          <div class="bento-tag"><span class="feature-tag tag-pro">Pro</span></div>
+          <div class="bento-icon pink">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div class="bento-title">Auto-scheduled sending</div>
+          <p class="bento-body">Set your sending window and Pulse handles the timing — spacing emails naturally so nothing looks like a bulk send. Your outreach keeps moving even when you're not at your desk.</p>
+        </div>
+
       </div>
     </div>
   </section>
