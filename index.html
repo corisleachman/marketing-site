@@ -886,7 +886,7 @@ nav {
   font-family: 'Outfit', sans-serif;
   font-size: 56px;
   font-weight: 900;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   color: var(--t);
   line-height: 1;
   display: flex;
@@ -895,29 +895,51 @@ nav {
 }
 .price-currency {
   font-family: 'Outfit', sans-serif;
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--tm);
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--t);
   align-self: flex-start;
-  margin-top: 6px;
-  margin-right: 1px;
+  margin-top: 4px;
+  margin-right: 2px;
+  letter-spacing: -0.02em;
 }
 .price-period {
   font-family: 'Outfit', sans-serif;
-  font-size: 15px;
-  font-weight: 400;
-  color: var(--td);
-  letter-spacing: 0;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--t);
+  letter-spacing: -0.02em;
   margin-left: 4px;
   align-self: flex-end;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
+}
+/* Free card price uses these — kept in sync with .price-currency/.price-period */
+.pricing-price .currency {
+  font-family: 'Outfit', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--t);
+  align-self: flex-start;
+  margin-top: 4px;
+  margin-right: 2px;
+  letter-spacing: -0.02em;
+}
+.pricing-price .period {
+  font-family: 'Outfit', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--t);
+  letter-spacing: -0.02em;
+  margin-left: 4px;
+  align-self: flex-end;
+  padding-bottom: 2px;
 }
 .price-static {
   font-family: 'Outfit', sans-serif;
   font-size: 56px;
   font-weight: 900;
-  letter-spacing: -0.04em;
-  color: var(--tm);
+  letter-spacing: -0.02em;
+  color: var(--t);
   line-height: 1;
 }
 .digit-window {
@@ -1709,7 +1731,7 @@ footer {
 
   const DIGITS   = '0123456789';
   const EASING   = 'cubic-bezier(0.45, 0, 0.15, 1)';
-  const DURATION = 520; // ms per reel
+  const DURATION = 676; // ms per reel (520 * 1.3)
   const STAGGER  = 45;  // ms between each digit
 
   const priceDigits = document.getElementById('pro-price-digits');
@@ -1743,8 +1765,9 @@ footer {
 
         const win = document.createElement('div');
         win.className = 'digit-window';
-        win.style.height = digitH + 'px';
-        win.style.width  = 'auto';
+        win.style.height   = digitH + 'px';
+        win.style.width    = 'auto';
+        win.style.overflow = 'hidden';
 
         const reel = document.createElement('div');
         reel.className = 'digit-reel';
@@ -1818,16 +1841,17 @@ footer {
     });
   }
 
-  // Hide leading zero — fades the first digit window when it shows 0
+  // Hide leading zero — collapses width of first digit window when showing 0
   function updateLeadingZero() {
     const digitSlots = slots.filter(s => s.type === 'digit');
     if (digitSlots.length === 0) return;
-    const first = digitSlots[0];
+    const first  = digitSlots[0];
     const isZero = first.pos === 0;
-    first.win.style.transition = 'opacity 0.3s ease';
+    // Never touch overflow — always hidden. Just collapse width and opacity.
+    first.win.style.transition = 'width 0.3s ease, opacity 0.3s ease';
     first.win.style.opacity    = isZero ? '0' : '1';
-    first.win.style.width      = isZero ? '0'  : '';
-    first.win.style.overflow   = isZero ? 'visible' : 'hidden';
+    first.win.style.width      = isZero ? '0' : '';
+    first.win.style.overflow   = 'hidden';
   }
 
   // Initialise at £12 — build then immediately snap (no animation on load)
