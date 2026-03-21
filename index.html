@@ -1781,25 +1781,23 @@ footer {
     const newDigits    = [...str].filter(c => DIGITS.includes(c));
     const currentSlots = slots.filter(s => s.type === 'digit');
 
-    // If digit count changed, rebuild then animate from top
+    // If digit count changed, rebuild then animate in from just above target
     if (newDigits.length !== currentSlots.length) {
       buildReels(str);
-      // Force a layout, then enable transitions and animate each reel
-      // from position 0 (top) down to the correct digit
+      // Reposition each reel one digit ABOVE its target so it scrolls
+      // smoothly into place — no zero flash, no jump from top of reel.
       requestAnimationFrame(() => {
         slots.filter(s => s.type === 'digit').forEach((slot, i) => {
           const target = DIGITS.indexOf(newDigits[i]);
-          // Start from 0 visually
+          const above  = target > 0 ? target - 1 : 9;
           slot.reel.style.transition = 'none';
-          slot.reel.style.transform  = 'translateY(0px)';
-          // After paint, animate down to target
-          requestAnimationFrame(() => {
-            setTimeout(() => {
-              slot.reel.style.transition = `transform ${DURATION}ms ${EASING}`;
-              slot.reel.style.transform  = `translateY(-${target * digitH}px)`;
-              slot.pos = target;
-            }, i * STAGGER);
-          });
+          slot.reel.style.transform  = `translateY(-${above * digitH}px)`;
+          slot.reel.getBoundingClientRect(); // force paint
+          setTimeout(() => {
+            slot.reel.style.transition = `transform ${DURATION}ms ${EASING}`;
+            slot.reel.style.transform  = `translateY(-${target * digitH}px)`;
+            slot.pos = target;
+          }, i * STAGGER);
         });
       });
       return;
