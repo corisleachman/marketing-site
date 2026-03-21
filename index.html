@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta property="og:title" content="Pulse. — The heartbeat of outreach.">
+<meta property="og:description" content="Stay consistent. Win more work. Pulse keeps your outreach moving — tracking contacts, surfacing follow-ups, and making the next action obvious.">
+<meta property="og:image" content="https://corisleachman.github.io/beta-invite/assets/Pulse%20outreach%20app.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://www.pulse-outreach.co.uk">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pulse.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pulse. — The heartbeat of outreach.">
+<meta name="twitter:description" content="Stay consistent. Win more work. Pulse keeps your outreach moving — tracking contacts, surfacing follow-ups, and making the next action obvious.">
+<meta name="twitter:image" content="https://corisleachman.github.io/beta-invite/assets/Pulse%20outreach%20app.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse. — The heartbeat of outreach.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root {
+  --bg:    #0d0914;
+  --s:     rgba(255,255,255,0.04);
+  --s2:    rgba(255,255,255,0.07);
+  --b:     rgba(255,255,255,0.07);
+  --b2:    rgba(255,255,255,0.13);
+  --t:     #f4f4f2;
+  --tm:    #a8a8b8;
+  --td:    #6b6b80;
+  --pink:  #ff1493;
+  --cyan:  #00d4ff;
+  --green: #64dc78;
+  --amber: #ff9d42;
+  --grad:  linear-gradient(135deg, #ff1493, #00d4ff);
+  --grad-text: linear-gradient(135deg, #ff1493 0%, #00d4ff 100%);
+  --glow-pink: rgba(255,20,147,0.25);
+  --glow-cyan: rgba(0,212,255,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--t);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── SCAN EFFECT ── */
+.callout-card,
+.step-card,
+.screen-card,
+.pricing-card,
+.proof-card,
+.access-inner {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease,
+              background 0.2s ease, transform 0.2s ease;
+}
+.scan-lit-pink {
+  border-color: rgba(255, 20, 147, 0.35) !important;
+  box-shadow: 0 0 10px rgba(255, 20, 147, 0.10),
+              inset 0 0 8px rgba(255, 20, 147, 0.03) !important;
+}
+.scan-lit-cyan {
+  border-color: rgba(0, 212, 255, 0.35) !important;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.10),
+              inset 0 0 8px rgba(0, 212, 255, 0.03) !important;
+}
+.scan-fade {
+  transition: border-color 1.4s ease, box-shadow 1.4s ease !important;
+}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── BACKGROUND GLOW ORBS ── */
+.bg-orbs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(140px);
+  opacity: 0.08;
+}
+.orb-1 { width: 600px; height: 600px; background: var(--pink); top: -200px; right: -100px; animation: drift1 18s ease-in-out infinite; }
+.orb-2 { width: 500px; height: 500px; background: var(--cyan);  bottom: 20%; left: -150px; animation: drift2 22s ease-in-out infinite; }
+.orb-3 { width: 400px; height: 400px; background: var(--amber); top: 40%; right: 15%; animation: drift3 26s ease-in-out infinite; opacity: 0.05; }
+
+@keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-60px,80px)} }
+@keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(80px,-60px)} }
+@keyframes drift3 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-40px,60px)} 66%{transform:translate(50px,-30px)} }
+
+/* ── LAYOUT ── */
+.wrap { position: relative; z-index: 1; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+.container-sm { max-width: 720px; margin: 0 auto; padding: 0 40px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(13,9,20,0.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--b);
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+.nav-logo {
+  font-family: 'Outfit', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--t);
+  text-decoration: none;
+  letter-spacing: -0.03em;
+}
+.nav-logo span {
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tm);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--t); }
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: var(--grad);
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  border-radius: 100px;
+  transition: opacity 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 24px var(--glow-pink);
+}
+.nav-cta:hover { opacity: 0.9; box-shadow: 0 4px 32px var(--glow-pink); }
+
+/* ── HERO ── */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 160px 40px 60px;
+  min-height: 100vh;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: 1px solid var(--b2);
+  border-radius: 100px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  background: rgba(0,212,255,0.06);
+  margin-bottom: 36px;
+  animation: fadeUp 0.8s ease both;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* Hero content that transitions between variants */
+.hero-content {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.hero-content.fading {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.hero-headline {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -0.04em;
+  color: var(--t);
+  margin-bottom: 28px;
+  animation: fadeUp 0.8s 0.1s ease both;
+}
+.hero-headline .grad {
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 18px;
+  color: var(--tm);
+  max-width: 480px;
+  line-height: 1.65;
+  margin-bottom: 52px;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 36px;
+  background: var(--grad);
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 0 40px var(--glow-pink), 0 4px 20px rgba(0,0,0,0.4);
+  letter-spacing: 0.01em;
+}
+.btn-primary:hover { box-shadow: 0 0 60px var(--glow-pink), 0 8px 30px rgba(0,0,0,0.4); }
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 28px;
+  background: transparent;
+  color: var(--tm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 100px;
+  border: 1px solid var(--b2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-ghost:hover { color: var(--t); border-color: rgba(255,255,255,0.3); }
+.hero-note {
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--td);
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+
+/* ── HERO VARIANT TOGGLE ── */
+.hero-toggle {
+  margin-top: 48px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  animation: fadeUp 0.8s 0.5s ease both;
+}
+.hero-toggle-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--td);
+  transition: color 0.25s;
+  cursor: pointer;
+  user-select: none;
+}
+.hero-toggle-label.active { color: var(--tm); }
+
+/* Toggle switch */
+.toggle-track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.toggle-track input {
+  opacity: 0;
+  width: 0; height: 0;
+  position: absolute;
+}
+.toggle-rail {
+  position: absolute;
+  inset: 0;
+  border-radius: 100px;
+  background: var(--b2);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: background 0.25s, border-color 0.25s;
+}
+.toggle-track input:checked ~ .toggle-rail {
+  background: linear-gradient(135deg, rgba(255,20,147,0.4), rgba(0,212,255,0.4));
+  border-color: rgba(0,212,255,0.3);
+}
+.toggle-thumb {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--t);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  pointer-events: none;
+}
+.toggle-track input:checked ~ .toggle-thumb {
+  transform: translateX(20px);
+  box-shadow: 0 1px 4px rgba(0,212,255,0.3);
+}
+
+/* ── SECTION DIVIDER ── */
+.divider {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--b2), transparent);
+  margin: 0 auto;
+}
+
+/* ── SHARED SECTION STYLES ── */
+.section { padding: 72px 0; }
+.section-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pink);
+  margin-bottom: 24px;
+}
+.section-headline {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--t);
+  margin-bottom: 24px;
+}
+.section-body {
+  font-size: 17px;
+  color: var(--tm);
+  line-height: 1.7;
+  max-width: 580px;
+}
+.section-body + .section-body { margin-top: 16px; }
+
+/* ── PROBLEM ── */
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+.callout-card {
+  background: var(--s);
+  border: 1px solid var(--b2);
+  border-radius: 16px;
+  padding: 28px;
+  margin-top: 32px;
+}
+.callout-card-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 12px;
+}
+.callout-card-headline {
+  font-family: 'Outfit', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--t);
+  line-height: 1.25;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+.callout-card-body {
+  font-size: 14px;
+  color: var(--tm);
+  line-height: 1.65;
+}
+
+/* ── HOW IT WORKS ── */
+.steps { padding: 72px 0; }
+.steps-header { text-align: center; margin-bottom: 72px; }
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+.step-card {
+  background: var(--s);
+  border: 1px solid var(--b);
+  padding: 40px 36px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s, border-color 0.3s;
+}
+.step-card:first-child { border-radius: 16px 0 0 16px; }
+.step-card:last-child  { border-radius: 0 16px 16px 0; }
+.step-card:hover { background: var(--s2); border-color: var(--b2); }
+.step-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--grad);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.step-card:hover::after { opacity: 1; }
+.step-num {
+  font-family: 'Outfit', sans-serif;
+  font-size: 48px;
+  font-weight: 900;
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: 20px;
+  letter-spacing: -0.04em;
+}
+.step-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--t);
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+.step-body { font-size: 14px; color: var(--tm); line-height: 1.65; }
+
+/* ── FEATURES ── */
+.features { padding: 100px 0; }
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.features-left .section-body { margin-bottom: 40px; }
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--s);
+  border: 1px solid var(--b);
+  border-radius: 10px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.feature-item:hover { border-color: var(--b2); background: var(--s2); }
+.feature-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--grad);
+  flex-shrink: 0;
+  margin-top: 6px;
+  box-shadow: 0 0 8px var(--glow-pink);
+}
+.feature-text { font-size: 14px; color: var(--t); line-height: 1.5; }
+.feature-tag {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-left: 6px;
+}
+.tag-pro  { background: rgba(255,20,147,0.15); color: var(--pink); border: 1px solid rgba(255,20,147,0.2); }
+.tag-soon { background: rgba(0,212,255,0.1);   color: var(--cyan); border: 1px solid rgba(0,212,255,0.18); }
+.tag-free { background: rgba(100,220,120,0.1); color: var(--green); border: 1px solid rgba(100,220,120,0.2); }
+
+.included-panel {
+  background: var(--s);
+  border: 1px solid var(--b2);
+  border-radius: 16px;
+  padding: 32px;
+  position: sticky;
+  top: 100px;
+}
+.included-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--td);
+  margin-bottom: 20px;
+}
+.included-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.included-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--tm);
+}
+.included-item .check {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(100,220,120,0.12);
+  border: 1px solid rgba(100,220,120,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--green);
+}
+
+/* ── PRODUCT VISUALS ── */
+.screens { padding: 100px 0; }
+.screens-header { text-align: center; margin-bottom: 60px; }
+.screens-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.screen-card {
+  background: var(--s);
+  border: 1px solid var(--b);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
+}
+.screen-card:hover { border-color: rgba(255,20,147,0.3); transform: translateY(-3px); }
+.screen-img {
+  width: 100%;
+  aspect-ratio: 16/10;
+  background: var(--s2);
+  border-bottom: 1px solid var(--b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.screen-img-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.3;
+}
+.screen-img-placeholder svg {
+  width: 32px; height: 32px;
+}
+.screen-img-placeholder span {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--td);
+}
+/* Placeholder grid lines to suggest UI */
+.screen-img::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--b) 1px, transparent 1px),
+    linear-gradient(90deg, var(--b) 1px, transparent 1px);
+  background-size: 40px 30px;
+  opacity: 0.4;
+}
+.screen-card-body { padding: 20px 20px 22px; }
+.screen-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--t);
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.screen-desc { font-size: 13px; color: var(--tm); line-height: 1.55; }
+
+/* ── PRICING ── */
+.pricing { padding: 100px 0; }
+.pricing-header { text-align: center; margin-bottom: 60px; }
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.pricing-card {
+  background: var(--s);
+  border: 1px solid var(--b2);
+  border-radius: 20px;
+  padding: 40px 36px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.pricing-card.featured {
+  border-color: rgba(255,20,147,0.3);
+  background: rgba(255,20,147,0.04);
+}
+.pricing-card.featured::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 10%; right: 10%;
+  height: 1px;
+  background: var(--grad);
+  opacity: 0.7;
+}
+.pricing-tier {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--td);
+  margin-bottom: 20px;
+}
+.pricing-tier.pro { color: var(--pink); }
+.pricing-price {
+  font-family: 'Outfit', sans-serif;
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--t);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.pricing-price .currency {
+  font-size: 24px;
+  font-weight: 600;
+  vertical-align: super;
+  margin-right: 2px;
+  color: var(--tm);
+}
+.pricing-price .period {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--td);
+  letter-spacing: 0;
+}
+.pricing-desc {
+  font-size: 13px;
+  color: var(--td);
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+.pricing-divider {
+  height: 1px;
+  background: var(--b);
+  margin-bottom: 28px;
+}
+.pricing-features {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 36px;
+}
+.pricing-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--tm);
+}
+.pricing-feature .check {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: rgba(100,220,120,0.12);
+  border: 1px solid rgba(100,220,120,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 9px;
+  color: var(--green);
+}
+.pricing-feature .check.pro-check {
+  background: rgba(255,20,147,0.1);
+  border-color: rgba(255,20,147,0.2);
+  color: var(--pink);
+}
+.pricing-cta {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 100px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pricing-cta.cta-free {
+  background: transparent;
+  color: var(--tm);
+  border: 1px solid var(--b2);
+}
+.pricing-cta.cta-free:hover { color: var(--t); border-color: rgba(255,255,255,0.3); }
+.pricing-cta.cta-pro {
+  background: var(--grad);
+  color: white;
+  border: none;
+  box-shadow: 0 0 32px var(--glow-pink);
+}
+.pricing-cta.cta-pro:hover { box-shadow: 0 0 48px var(--glow-pink); }
+.pricing-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--grad);
+  border-radius: 100px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: white;
+  margin-bottom: 16px;
+}
+
+/* ── SOCIAL PROOF ── */
+.proof { padding: 100px 0; }
+.proof-header { text-align: center; margin-bottom: 60px; }
+.proof-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.proof-card {
+  background: var(--s);
+  border: 1px solid var(--b);
+  border-radius: 16px;
+  padding: 28px;
+  position: relative;
+}
+.proof-quote {
+  font-size: 14px;
+  color: var(--tm);
+  line-height: 1.7;
+  font-style: italic;
+  margin-bottom: 20px;
+}
+.proof-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  opacity: 0.35;
+}
+.proof-line {
+  height: 10px;
+  border-radius: 100px;
+  background: var(--b2);
+}
+.proof-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+.proof-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--s2);
+  border: 1px solid var(--b2);
+  flex-shrink: 0;
+}
+.proof-meta { display: flex; flex-direction: column; gap: 4px; }
+.proof-name-line { height: 8px; width: 80px; border-radius: 100px; background: var(--b2); }
+.proof-role-line { height: 7px; width: 120px; border-radius: 100px; background: var(--s2); }
+.proof-coming {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 13px;
+  color: var(--td);
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--b);
+  padding: 40px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-logo {
+  font-family: 'Outfit', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.footer-logo span {
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.footer-links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+.footer-links a {
+  font-size: 12px;
+  color: var(--td);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--tm); }
+.footer-note { font-size: 12px; color: var(--td); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── GRADIENT LINE ── */
+.grad-line {
+  height: 1px;
+  background: var(--grad);
+  opacity: 0.2;
+  margin: 0;
+}
+
+/* ── BUTTON INK DROP ── */
+.btn-primary, .nav-cta, .btn-ghost, .pricing-cta {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Pulse ring wrapper */
+.btn-ring-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.btn-ring-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 100px;
+  border: 1.5px solid rgba(255,255,255,0.55);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1);
+}
+.btn-ring-wrap.ring-pulse::after {
+  animation: btn-ring 1.2s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+}
+@keyframes btn-ring {
+  0%   { transform: scale(1.0);  opacity: 0;   }
+  4%   { opacity: 0.44;                        }
+  100% { transform: scale(1.48); opacity: 0;   }
+}
+.btn-ripple-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .container, .container-sm { padding: 0 20px; }
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .nav-cta { padding: 8px 16px; font-size: 12px; }
+  .hero { padding: 100px 20px 60px; min-height: auto; }
+  .divider { display: none; }
+  .hero-actions { flex-direction: column; align-items: center; width: 100%; }
+  .btn-primary, .btn-ring-wrap { width: 100%; justify-content: center; }
+  .btn-ghost { width: 100%; justify-content: center; }
+  .problem-grid { grid-template-columns: 1fr; gap: 32px; }
+  .steps-grid { grid-template-columns: 1fr; gap: 2px; }
+  .step-card:first-child { border-radius: 16px 16px 0 0; }
+  .step-card:last-child  { border-radius: 0 0 16px 16px; }
+  .features-grid { grid-template-columns: 1fr; gap: 32px; }
+  .screens-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+  .proof-grid { grid-template-columns: 1fr; }
+  footer { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+  .footer-links { flex-wrap: wrap; gap: 16px; }
+  .section, .steps, .features, .screens, .pricing, .proof { padding: 60px 0; }
+}
+
+@media (max-width: 480px) {
+  .screens-grid { grid-template-columns: 1fr; }
+  .hero { padding: 80px 20px 48px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="pulse-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <a href="#" class="nav-logo">Pulse<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+    </ul>
+  </div>
+  <div class="btn-ring-wrap"><a href="#" class="nav-cta">Start free →</a></div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">Now live · Free to start</div>
+
+    <div class="hero-content" id="hero-content">
+      <h1 class="hero-headline" id="hero-headline">
+        <span class="grad">Pulse.</span><br>
+        The heartbeat of outreach.
+      </h1>
+      <p class="hero-sub" id="hero-sub">For people who win work through conversations. A calmer system for staying consistent — so the right people hear from you, every time.</p>
+    </div>
+
+    <div class="hero-actions">
+      <div class="btn-ring-wrap"><a href="#" class="btn-primary">Start for free →</a></div>
+      <div class="btn-ring-wrap"><a href="#how" class="btn-ghost">See how it works</a></div>
+    </div>
+    <p class="hero-note">Free plan available · No credit card required</p>
+
+    <!-- VARIANT TOGGLE -->
+    <div class="hero-toggle">
+      <span class="hero-toggle-label active" id="lbl-a">A</span>
+      <label class="toggle-track">
+        <input type="checkbox" id="hero-variant-toggle">
+        <div class="toggle-rail"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+      <span class="hero-toggle-label" id="lbl-b">B</span>
+    </div>
+
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PROBLEM -->
+  <section class="section" id="problem">
+    <div class="container">
+      <div class="problem-grid reveal">
+        <div>
+          <div class="section-label">The problem</div>
+          <h2 class="section-headline">Most outreach systems are built wrong.</h2>
+          <p class="section-body">They're built for sales teams with ops budgets. Pipelines, deal stages, dashboards, automation — all of it needs setting up, maintaining, and learning.</p>
+          <p class="section-body">You open them and feel the weight of it before you've sent a single email. Most people doing outreach don't need any of that. They just need something that keeps them on track.</p>
+        </div>
+        <div class="problem-right">
+          <div class="callout-card reveal" data-scan="pink">
+            <div class="callout-card-label">Outreach works.<br>Consistency breaks.</div>
+            <h3 class="callout-card-headline">Most outreach doesn't fail because the message is bad.</h3>
+            <p class="callout-card-body">It fails because follow-ups stop happening. A quick check-in. A friendly nudge. Those small actions create conversations. And conversations create opportunity. But only if they actually happen.</p>
+          </div>
+          <div class="callout-card reveal" data-scan="cyan" style="margin-top:16px;">
+            <div class="callout-card-label">The real problem</div>
+            <h3 class="callout-card-headline">It's not sending emails. It's remembering the next one.</h3>
+            <p class="callout-card-body">Not a CRM. Not a cold-email blaster. Just a simple tool that keeps your outreach moving.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grad-line"></div>
+
+  <!-- HOW IT WORKS -->
+  <section class="steps" id="how">
+    <div class="container">
+      <div class="steps-header reveal">
+        <div class="section-label" style="text-align:center;">How it works</div>
+        <h2 class="section-headline" style="text-align:center;max-width:500px;margin:0 auto;">Three steps. Then it runs itself.</h2>
+      </div>
+      <div class="steps-grid reveal">
+        <div class="step-card" data-scan="pink">
+          <div class="step-num">01</div>
+          <div class="step-title">Import and review</div>
+          <p class="step-body">Bring in any prospect list. Review who's worth contacting. Every list has noise — this is where you cut it.</p>
+        </div>
+        <div class="step-card" data-scan="cyan">
+          <div class="step-num">02</div>
+          <div class="step-title">Send with intention</div>
+          <p class="step-body">Drafts are generated. You review and approve. Nothing sends without your eyes on it first.</p>
+        </div>
+        <div class="step-card" data-scan="pink">
+          <div class="step-num">03</div>
+          <div class="step-title">Never lose momentum</div>
+          <p class="step-body">Follow-ups appear when they're due. Conversations surface automatically. The next step is always obvious.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grad-line"></div>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="features-grid">
+        <div class="features-left reveal">
+          <div class="section-label">The system</div>
+          <h2 class="section-headline">An effortless system for consistent outreach.</h2>
+          <p class="section-body">This tool does one thing. It stops your outreach from going quiet. No pipelines. No confusing dashboards. No CRM to set up and maintain.</p>
+          <div class="feature-list" style="margin-top:32px;">
+            <div class="feature-item">
+              <div class="feature-dot"></div>
+              <div class="feature-text">Tracks who you've contacted and when</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-dot"></div>
+              <div class="feature-text">Tells you what needs to happen next</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-dot"></div>
+              <div class="feature-text">Makes the next action effortless, so momentum never disappears</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-dot"></div>
+              <div class="feature-text">Surfaces conversations and replies in one place</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-dot"></div>
+              <div class="feature-text">Suggests the right follow-up — value drop, check-in, or chase — at the right moment <span class="feature-tag tag-pro">Pro</span></div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-dot"></div>
+              <div class="feature-text">AI-drafted emails that sound like you <span class="feature-tag tag-pro">Pro</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="included-panel">
+            <div class="included-label">What's included</div>
+            <div class="included-list">
+              <div class="included-item"><div class="check">✓</div><span>Gmail integration</span></div>
+              <div class="included-item"><div class="check">✓</div><span>Campaign & prospect tracking</span></div>
+              <div class="included-item"><div class="check">✓</div><span>Follow-up queue & reminders</span></div>
+              <div class="included-item"><div class="check">✓</div><span>Prospect status tracking</span></div>
+              <div class="included-item"><div class="check">✓</div><span>One-click prospect qualification</span></div>
+              <div class="included-item"><div class="check">✓</div><span>Your data stays yours</span></div>
+              <div class="included-item">
+                <div class="check">✓</div>
+                <span>Unlimited campaigns <span class="feature-tag tag-pro">Pro</span></span>
+              </div>
+              <div class="included-item">
+                <div class="check">✓</div>
+                <span>AI-drafted emails <span class="feature-tag tag-pro">Pro</span></span>
+              </div>
+              <div class="included-item">
+                <div class="check">✓</div>
+                <span>Auto-scheduled sending <span class="feature-tag tag-pro">Pro</span></span>
+              </div>
+              <div class="included-item">
+                <div class="check" style="color:var(--cyan);background:rgba(0,212,255,0.08);border-color:rgba(0,212,255,0.2);">→</div>
+                <span>Microsoft Outlook <span class="feature-tag tag-soon">Soon</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grad-line"></div>
+
+  <!-- PRODUCT VISUALS -->
+  <section class="screens" id="screens">
+    <div class="container">
+      <div class="screens-header reveal">
+        <div class="section-label" style="text-align:center;">What it looks like</div>
+        <h2 class="section-headline" style="text-align:center;">Simple by design.<br>Effortless by default.</h2>
+        <p style="color:var(--tm);font-size:16px;margin-top:16px;max-width:480px;margin-left:auto;margin-right:auto;">A dashboard designed around actions, not data. You always know what to do next.</p>
+      </div>
+      <div class="screens-grid reveal">
+        <div class="screen-card" data-scan="pink">
+          <div class="screen-img">
+            <div class="screen-img-placeholder">
+              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="6" width="24" height="3" rx="1.5" fill="currentColor"/><rect x="4" y="13" width="18" height="2" rx="1" fill="currentColor"/><rect x="4" y="19" width="20" height="2" rx="1" fill="currentColor"/><rect x="4" y="25" width="14" height="2" rx="1" fill="currentColor"/></svg>
+              <span>Screenshot coming</span>
+            </div>
+          </div>
+          <div class="screen-card-body">
+            <div class="screen-name">Campaign dashboard</div>
+            <p class="screen-desc">Your active campaigns at a glance — with follow-ups surfaced and prioritised automatically.</p>
+          </div>
+        </div>
+        <div class="screen-card" data-scan="cyan">
+          <div class="screen-img">
+            <div class="screen-img-placeholder">
+              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="6" width="24" height="3" rx="1.5" fill="currentColor"/><rect x="4" y="13" width="18" height="2" rx="1" fill="currentColor"/><rect x="4" y="19" width="20" height="2" rx="1" fill="currentColor"/><rect x="4" y="25" width="14" height="2" rx="1" fill="currentColor"/></svg>
+              <span>Screenshot coming</span>
+            </div>
+          </div>
+          <div class="screen-card-body">
+            <div class="screen-name">Prospect review</div>
+            <p class="screen-desc">Review profiles and draft personalised outreach — all without switching tabs.</p>
+          </div>
+        </div>
+        <div class="screen-card" data-scan="pink">
+          <div class="screen-img">
+            <div class="screen-img-placeholder">
+              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="6" width="24" height="3" rx="1.5" fill="currentColor"/><rect x="4" y="13" width="18" height="2" rx="1" fill="currentColor"/><rect x="4" y="19" width="20" height="2" rx="1" fill="currentColor"/><rect x="4" y="25" width="14" height="2" rx="1" fill="currentColor"/></svg>
+              <span>Screenshot coming</span>
+            </div>
+          </div>
+          <div class="screen-card-body">
+            <div class="screen-name">Follow-up queue</div>
+            <p class="screen-desc">See exactly who needs a reply and when. Nothing gets missed, nothing gets forgotten.</p>
+          </div>
+        </div>
+        <div class="screen-card" data-scan="cyan">
+          <div class="screen-img">
+            <div class="screen-img-placeholder">
+              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="6" width="24" height="3" rx="1.5" fill="currentColor"/><rect x="4" y="13" width="18" height="2" rx="1" fill="currentColor"/><rect x="4" y="19" width="20" height="2" rx="1" fill="currentColor"/><rect x="4" y="25" width="14" height="2" rx="1" fill="currentColor"/></svg>
+              <span>Screenshot coming</span>
+            </div>
+          </div>
+          <div class="screen-card-body">
+            <div class="screen-name">Message drafts</div>
+            <p class="screen-desc">AI-assisted drafts that sound like you — ready to approve and send in one click.</p>
+          </div>
+        </div>
+        <div class="screen-card" data-scan="pink">
+          <div class="screen-img">
+            <div class="screen-img-placeholder">
+              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="6" width="24" height="3" rx="1.5" fill="currentColor"/><rect x="4" y="13" width="18" height="2" rx="1" fill="currentColor"/><rect x="4" y="19" width="20" height="2" rx="1" fill="currentColor"/><rect x="4" y="25" width="14" height="2" rx="1" fill="currentColor"/></svg>
+              <span>Screenshot coming</span>
+            </div>
+          </div>
+          <div class="screen-card-body">
+            <div class="screen-name">Conversations</div>
+            <p class="screen-desc">Active replies and meetings in one view — so warm leads never fall through the cracks.</p>
+          </div>
+        </div>
+        <div class="screen-card" data-scan="cyan">
+          <div class="screen-img">
+            <div class="screen-img-placeholder">
+              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="6" width="24" height="3" rx="1.5" fill="currentColor"/><rect x="4" y="13" width="18" height="2" rx="1" fill="currentColor"/><rect x="4" y="19" width="20" height="2" rx="1" fill="currentColor"/><rect x="4" y="25" width="14" height="2" rx="1" fill="currentColor"/></svg>
+              <span>Screenshot coming</span>
+            </div>
+          </div>
+          <div class="screen-card-body">
+            <div class="screen-name">LinkedIn tracking</div>
+            <p class="screen-desc">Track connection requests and LinkedIn activity alongside your email outreach.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grad-line"></div>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div class="pricing-header reveal">
+        <div class="section-label" style="text-align:center;">Pricing</div>
+        <h2 class="section-headline" style="text-align:center;">Start free. Upgrade when you're ready.</h2>
+        <p style="color:var(--tm);font-size:16px;margin-top:16px;max-width:440px;margin-left:auto;margin-right:auto;">No pressure. The free plan is genuinely useful. Pro is there when you want more.</p>
+      </div>
+      <div class="pricing-grid reveal">
+
+        <!-- Free -->
+        <div class="pricing-card" data-scan="cyan">
+          <div class="pricing-tier">Free</div>
+          <div class="pricing-price">£0</div>
+          <div class="pricing-desc">Get started. No card required.</div>
+          <div class="pricing-divider"></div>
+          <div class="pricing-features">
+            <div class="pricing-feature"><div class="check">✓</div><span>1 campaign</span></div>
+            <div class="pricing-feature"><div class="check">✓</div><span>Up to 100 prospects</span></div>
+            <div class="pricing-feature"><div class="check">✓</div><span>Gmail integration</span></div>
+            <div class="pricing-feature"><div class="check">✓</div><span>Follow-up queue</span></div>
+            <div class="pricing-feature"><div class="check">✓</div><span>Prospect status tracking</span></div>
+            <div class="pricing-feature"><div class="check">✓</div><span>Manual sending</span></div>
+          </div>
+          <div class="btn-ring-wrap" style="display:block;">
+            <a href="#" class="pricing-cta cta-free">Start for free</a>
+          </div>
+        </div>
+
+        <!-- Pro -->
+        <div class="pricing-card featured" data-scan="pink">
+          <div class="pricing-badge">Most popular</div>
+          <div class="pricing-tier pro">Pro</div>
+          <div class="pricing-price"><span class="currency">£</span>8<span class="period">/month</span></div>
+          <div class="pricing-desc">Or £45/year — save two months.</div>
+          <div class="pricing-divider"></div>
+          <div class="pricing-features">
+            <div class="pricing-feature"><div class="check pro-check">✓</div><span>Unlimited campaigns</span></div>
+            <div class="pricing-feature"><div class="check pro-check">✓</div><span>Unlimited prospects</span></div>
+            <div class="pricing-feature"><div class="check pro-check">✓</div><span>AI-drafted emails</span></div>
+            <div class="pricing-feature"><div class="check pro-check">✓</div><span>Auto-scheduled sending</span></div>
+            <div class="pricing-feature"><div class="check pro-check">✓</div><span>Smart follow-up suggestions</span></div>
+            <div class="pricing-feature"><div class="check pro-check">✓</div><span>Everything in Free</span></div>
+          </div>
+          <div class="btn-ring-wrap" style="display:block;">
+            <a href="#" class="pricing-cta cta-pro">Get Pro →</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="grad-line"></div>
+
+  <!-- SOCIAL PROOF (placeholder) -->
+  <section class="proof" id="proof">
+    <div class="container">
+      <div class="proof-header reveal">
+        <div class="section-label" style="text-align:center;">What people say</div>
+        <h2 class="section-headline" style="text-align:center;">Real results from real outreach.</h2>
+      </div>
+      <div class="proof-grid reveal">
+        <div class="proof-card" data-scan="pink">
+          <div class="proof-placeholder">
+            <div class="proof-line" style="width:100%;"></div>
+            <div class="proof-line" style="width:85%;"></div>
+            <div class="proof-line" style="width:70%;"></div>
+            <div class="proof-author">
+              <div class="proof-avatar"></div>
+              <div class="proof-meta">
+                <div class="proof-name-line"></div>
+                <div class="proof-role-line"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="proof-card" data-scan="cyan">
+          <div class="proof-placeholder">
+            <div class="proof-line" style="width:90%;"></div>
+            <div class="proof-line" style="width:100%;"></div>
+            <div class="proof-line" style="width:60%;"></div>
+            <div class="proof-author">
+              <div class="proof-avatar"></div>
+              <div class="proof-meta">
+                <div class="proof-name-line"></div>
+                <div class="proof-role-line"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="proof-card" data-scan="pink">
+          <div class="proof-placeholder">
+            <div class="proof-line" style="width:80%;"></div>
+            <div class="proof-line" style="width:95%;"></div>
+            <div class="proof-line" style="width:75%;"></div>
+            <div class="proof-author">
+              <div class="proof-avatar"></div>
+              <div class="proof-meta">
+                <div class="proof-name-line"></div>
+                <div class="proof-role-line"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="proof-coming">Testimonials coming soon — currently in beta with early users.</p>
+    </div>
+  </section>
+
+</div><!-- end wrap -->
+
+<footer>
+  <div class="footer-logo">Pulse<span>.</span></div>
+  <ul class="footer-links">
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Terms</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <div class="footer-note">© 2026 Pulse. · Your data stays yours.</div>
+</footer>
+
+<script>
+// ── HERO VARIANT TOGGLE ────────────────────────────────────
+const heroToggle  = document.getElementById('hero-variant-toggle');
+const heroContent = document.getElementById('hero-content');
+const heroHL      = document.getElementById('hero-headline');
+const heroSub     = document.getElementById('hero-sub');
+const lblA        = document.getElementById('lbl-a');
+const lblB        = document.getElementById('lbl-b');
+
+const variants = {
+  a: {
+    hl:  '<span class="grad">Pulse.</span><br>The heartbeat of outreach.',
+    sub: 'For people who win work through conversations. A calmer system for staying consistent — so the right people hear from you, every time.'
+  },
+  b: {
+    hl:  'Stay consistent.<br><span class="grad">Win more work.</span>',
+    sub: 'Most outreach falls apart between conversations. Pulse keeps it moving — so the right people hear from you at the right time, every time.'
+  }
+};
+
+heroToggle.addEventListener('change', () => {
+  const v = heroToggle.checked ? 'b' : 'a';
+  heroContent.classList.add('fading');
+  setTimeout(() => {
+    heroHL.innerHTML  = variants[v].hl;
+    heroSub.innerHTML = variants[v].sub;
+    heroContent.classList.remove('fading');
+  }, 350);
+  lblA.classList.toggle('active', !heroToggle.checked);
+  lblB.classList.toggle('active',  heroToggle.checked);
+});
+</script>
+
+<script>
+// Scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 60);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => observer.observe(el));
+
+// Smooth nav anchors
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) {
+      e.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+<script>
+// ─────────────────────────────────────────────────────────
+// HEARTBEAT PULSE — Electric Dreams palette (electric6 canonical)
+// ─────────────────────────────────────────────────────────
+(function () {
+  const canvas = document.getElementById('pulse-canvas');
+  const ctx    = canvas.getContext('2d');
+
+  const BLOB_COUNT     = 9;
+  const RADIUS_MIN     = 110;
+  const RADIUS_MAX     = 240;
+  const CYCLE_MS       = 8000;
+  const PULSE_SWELL    = 0.22;
+  const OPACITY_BASE   = 0.10;
+  const OPACITY_FLARE  = 0.14;
+  const DRIFT          = 0.4;
+  const BLUR_PX        = 55;
+  const STAGGER        = 0.15;
+  const PARALLAX       = 0.03;
+  const MOBILE_FACTOR  = 0.6;
+
+  const PALETTE = [
+    [255,  20, 147],
+    [255,  20, 147],
+    [  0, 212, 255],
+    [  0, 212, 255],
+    [180,  10, 120],
+    [ 80, 160, 220],
+  ];
+
+  function heartbeatCurve(t) {
+    const b1 = Math.exp(-((t - 0.04) ** 2) / 0.0012);
+    const b2 = 0.45 * Math.exp(-((t - 0.13) ** 2) / 0.0022);
+    return Math.min(1, Math.max(0, b1 + b2));
+  }
+
+  let W, H, blobs = [];
+  let mx = 0.5, my = 0.5, tmx = 0.5, tmy = 0.5;
+  let off, octx, raf;
+
+  function isMobile() { return window.innerWidth < 768; }
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    off = document.createElement('canvas');
+    off.width = W; off.height = H;
+    octx = off.getContext('2d');
+    init();
+  }
+
+  function init() {
+    blobs = [];
+    const count = Math.floor(BLOB_COUNT * (isMobile() ? MOBILE_FACTOR : 1));
+    const cols = Math.ceil(Math.sqrt(count * W / H));
+    const rows = Math.ceil(count / cols);
+    const cw = W / cols, ch = H / rows;
+
+    for (let i = 0; i < count; i++) {
+      const col = i % cols, row = Math.floor(i / cols);
+      const pal = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+      const br  = RADIUS_MIN + Math.random() * (RADIUS_MAX - RADIUS_MIN);
+      blobs.push({
+        x: (col + 0.15 + Math.random() * 0.7) * cw,
+        y: (row + 0.15 + Math.random() * 0.7) * ch,
+        baseR: br, r: br,
+        col: pal,
+        baseOpacity: OPACITY_BASE + Math.random() * 0.07,
+        ax: Math.random() * Math.PI * 2,
+        ay: Math.random() * Math.PI * 2,
+        sx: 0.0002 + Math.random() * 0.0003,
+        sy: 0.0002 + Math.random() * 0.0003,
+        phaseOffset: (i / count) * STAGGER,
+      });
+    }
+  }
+
+  function frame(ts) {
+    octx.clearRect(0, 0, W, H);
+    ctx.clearRect(0, 0, W, H);
+
+    mx += (tmx - mx) * 0.03;
+    my += (tmy - my) * 0.03;
+    const ox = (0.5 - mx) * W * PARALLAX;
+    const oy = (0.5 - my) * H * PARALLAX;
+
+    blobs.forEach(b => {
+      b.ax += b.sx; b.ay += b.sy;
+      b.x  += Math.sin(b.ax) * DRIFT;
+      b.y  += Math.cos(b.ay) * DRIFT;
+      const pad = b.baseR + 10;
+      if (b.x < -pad)    b.x = W + pad;
+      if (b.x > W + pad) b.x = -pad;
+      if (b.y < -pad)    b.y = H + pad;
+      if (b.y > H + pad) b.y = -pad;
+
+      const cycleT = ((ts / CYCLE_MS) + b.phaseOffset) % 1;
+      const hb = heartbeatCurve(cycleT);
+
+      b.r = b.baseR * (1 + PULSE_SWELL * hb);
+      const opacity = b.baseOpacity + OPACITY_FLARE * hb;
+
+      const gx = b.x + ox, gy = b.y + oy;
+      const [r, g, bv] = b.col;
+      const grad = octx.createRadialGradient(gx, gy, 0, gx, gy, b.r);
+      grad.addColorStop(0,   `rgba(${r},${g},${bv},${opacity.toFixed(3)})`);
+      grad.addColorStop(0.4, `rgba(${r},${g},${bv},${(opacity * 0.5).toFixed(3)})`);
+      grad.addColorStop(1,   `rgba(${r},${g},${bv},0)`);
+      octx.beginPath();
+      octx.arc(gx, gy, b.r, 0, Math.PI * 2);
+      octx.fillStyle = grad;
+      octx.fill();
+    });
+
+    ctx.filter = `blur(${BLUR_PX}px)`;
+    ctx.drawImage(off, 0, 0);
+    ctx.filter = 'none';
+
+    raf = requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('mousemove', e => { tmx = e.clientX / W; tmy = e.clientY / H; });
+  window.addEventListener('touchmove', e => {
+    if (e.touches.length) { tmx = e.touches[0].clientX / W; tmy = e.touches[0].clientY / H; }
+  }, { passive: true });
+  window.addEventListener('resize', () => { cancelAnimationFrame(raf); resize(); raf = requestAnimationFrame(frame); });
+
+  resize();
+  raf = requestAnimationFrame(frame);
+})();
+</script>
+
+<script>
+// ── SUBTLE SCAN — linear sweep synced to 8s heartbeat ──
+(function () {
+  const CYCLE_MS = 8000;
+  const LIT_MS   = 280;
+  const FADE_MS  = 1400;
+
+  let scanTargets = [];
+
+  function collectTargets() {
+    scanTargets = Array.from(document.querySelectorAll('[data-scan]')).map(el => ({
+      el,
+      colour: el.dataset.scan,
+      lastFired: -Infinity,
+    }));
+  }
+
+  function getScanY(ts) {
+    const t = (ts % CYCLE_MS) / CYCLE_MS;
+    return document.documentElement.scrollHeight * (1 - t);
+  }
+
+  function frame(ts) {
+    const scanY   = getScanY(ts);
+    const scrollY = window.scrollY;
+
+    scanTargets.forEach(target => {
+      const rect        = target.el.getBoundingClientRect();
+      const elCentreDoc = scrollY + rect.top + rect.height * 0.5;
+      const dist        = Math.abs(scanY - elCentreDoc);
+
+      if (dist < 60 && (ts - target.lastFired) > CYCLE_MS * 0.9) {
+        target.lastFired = ts;
+        light(target.el, target.colour);
+      }
+    });
+
+    requestAnimationFrame(frame);
+  }
+
+  function light(el, colour) {
+    el.classList.remove('scan-lit-pink', 'scan-lit-cyan', 'scan-fade');
+    void el.offsetWidth;
+    el.classList.add(colour === 'pink' ? 'scan-lit-pink' : 'scan-lit-cyan');
+    setTimeout(() => {
+      el.classList.add('scan-fade');
+      el.classList.remove('scan-lit-pink', 'scan-lit-cyan');
+      setTimeout(() => el.classList.remove('scan-fade'), FADE_MS + 50);
+    }, LIT_MS);
+  }
+
+  collectTargets();
+  window.addEventListener('resize', collectTargets);
+  requestAnimationFrame(frame);
+})();
+</script>
+
+<script>
+// ── BUTTON INK DROP ──────────────────────────────────────────
+(function () {
+  const DURATION  = 1800;
+  const MAX_SCALE = 2.8;
+  const PEAK_AT   = 0.08;
+
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function initButton(btn) {
+    const cvs = document.createElement('canvas');
+    cvs.className = 'btn-ripple-canvas';
+    btn.appendChild(cvs);
+    const ctx = cvs.getContext('2d');
+    let W, H, diagonal, raf, startTs, ox, oy;
+
+    function resize() {
+      const r = btn.getBoundingClientRect();
+      W = cvs.width  = r.width;
+      H = cvs.height = r.height;
+      diagonal = Math.sqrt(W * W + H * H);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function frame(ts) {
+      const elapsed = ts - startTs;
+      const t       = Math.min(elapsed / DURATION, 1);
+      const eased   = easeOut(t);
+      const radius  = eased * diagonal * MAX_SCALE;
+
+      ctx.clearRect(0, 0, W, H);
+
+      let opacity;
+      if (t < PEAK_AT) {
+        opacity = t / PEAK_AT;
+      } else {
+        opacity = Math.pow(1 - (t - PEAK_AT) / (1 - PEAK_AT), 1.6);
+      }
+      opacity *= 0.22;
+
+      const grad = ctx.createRadialGradient(ox, oy, 0, ox, oy, radius);
+      grad.addColorStop(0,    `rgba(255,255,255,${(opacity * 1.8).toFixed(3)})`);
+      grad.addColorStop(0.15, `rgba(255,255,255,${(opacity * 1.2).toFixed(3)})`);
+      grad.addColorStop(0.5,  `rgba(255,255,255,${(opacity * 0.5).toFixed(3)})`);
+      grad.addColorStop(1,    `rgba(255,255,255,0)`);
+      ctx.beginPath();
+      ctx.arc(ox, oy, Math.max(radius, 1), 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      if (t < 1) {
+        raf = requestAnimationFrame(frame);
+      } else {
+        ctx.clearRect(0, 0, W, H);
+      }
+    }
+
+    let ready = true;
+    btn.addEventListener('mouseenter', (e) => {
+      if (!ready) return;
+      ready = false;
+      if (raf) cancelAnimationFrame(raf);
+      const rect = btn.getBoundingClientRect();
+      ox = e.clientX - rect.left;
+      oy = e.clientY - rect.top;
+      startTs = null;
+      raf = requestAnimationFrame(ts => { startTs = ts; frame(ts); });
+
+      const wrap = btn.closest('.btn-ring-wrap');
+      if (wrap) {
+        wrap.classList.remove('ring-pulse');
+        void wrap.offsetWidth;
+        wrap.classList.add('ring-pulse');
+        wrap.addEventListener('animationend', () => {
+          wrap.classList.remove('ring-pulse');
+        }, { once: true });
+      }
+    });
+    btn.addEventListener('mouseleave', () => {
+      setTimeout(() => { ready = true; }, 100);
+    });
+  }
+
+  document.querySelectorAll('.btn-primary, .nav-cta, .btn-ghost, .pricing-cta').forEach(initButton);
+})();
+</script>
+
+</body>
+</html>
