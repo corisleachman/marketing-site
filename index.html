@@ -688,13 +688,6 @@ nav {
   color: var(--green);
   margin-left: 6px;
   vertical-align: middle;
-  opacity: 0;
-  transform: translateY(2px);
-  transition: opacity 0.3s, transform 0.3s;
-}
-.billing-save-badge.visible {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* Pricing grid */
@@ -1358,7 +1351,7 @@ footer {
         </label>
         <span class="billing-label" id="bill-annual">
           Annual
-          <span class="billing-save-badge" id="header-save-badge">Save 40%</span>
+          <span class="billing-save-badge" id="header-save-badge">Save 45%</span>
         </span>
       </div>
 
@@ -1523,7 +1516,6 @@ billingToggle.addEventListener('change', () => {
 
   billMonthly.classList.toggle('active', !isAnnual);
   billAnnual.classList.toggle('active',   isAnnual);
-  headerSaveBadge.classList.toggle('visible', isAnnual);
 
   if (isAnnual) {
     flipPrice(proPriceEl,
