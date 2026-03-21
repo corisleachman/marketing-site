@@ -1573,7 +1573,7 @@ footer {
         </label>
         <span class="billing-label" id="bill-annual">
           Annual
-          <span class="billing-save-badge" id="header-save-badge">Save 45%</span>
+          <span class="billing-save-badge" id="header-save-badge">Save 42%</span>
         </span>
       </div>
 
@@ -1818,8 +1818,21 @@ footer {
     });
   }
 
+  // Hide leading zero — fades the first digit window when it shows 0
+  function updateLeadingZero() {
+    const digitSlots = slots.filter(s => s.type === 'digit');
+    if (digitSlots.length === 0) return;
+    const first = digitSlots[0];
+    const isZero = first.pos === 0;
+    first.win.style.transition = 'opacity 0.3s ease';
+    first.win.style.opacity    = isZero ? '0' : '1';
+    first.win.style.width      = isZero ? '0'  : '';
+    first.win.style.overflow   = isZero ? 'visible' : 'hidden';
+  }
+
   // Initialise at £12 — build then immediately snap (no animation on load)
   buildReels('12');
+  updateLeadingZero();
 
   // ── BILLING TOGGLE ──────────────────────────────────────
   const billingToggle = document.getElementById('billing-toggle');
@@ -1829,9 +1842,9 @@ footer {
   const proSaving     = document.getElementById('pro-saving');
 
   const MONTHLY_PRICE   = 12;
-  const ANNUAL_TOTAL    = 79;
+  const ANNUAL_TOTAL    = 84;
   const ANNUAL_MONTHLY  = '07';
-  const SAVING_PCT      = 45;
+  const SAVING_PCT      = 42;
   const SAVING_AMOUNT   = MONTHLY_PRICE * 12 - ANNUAL_TOTAL;
 
   billingToggle.addEventListener('change', () => {
@@ -1842,12 +1855,14 @@ footer {
 
     if (isAnnual) {
       setPrice(ANNUAL_MONTHLY);
+      setTimeout(updateLeadingZero, 50);
       proPeriod.textContent = '/mo';
       proDesc.textContent   = `£${ANNUAL_TOTAL} billed annually.`;
       proSaving.textContent = `You save £${SAVING_AMOUNT} a year — that's ${SAVING_PCT}% off`;
       proSaving.classList.add('visible');
     } else {
       setPrice(String(MONTHLY_PRICE));
+      setTimeout(updateLeadingZero, 50);
       proPeriod.textContent = '/month';
       proDesc.textContent   = 'Billed monthly. Cancel any time.';
       proSaving.classList.remove('visible');
