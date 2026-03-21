@@ -720,23 +720,6 @@ nav {
   position: relative;
   overflow: hidden;
 }
-/* Warp canvas layout */
-.warp-img-wrap {
-  display: block;
-  padding: 0;
-}
-.warp-img-wrap .warp-src {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-.warp-img-wrap .warp-cvs {
-  display: block;
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
 .screen-img-placeholder {
   display: flex;
   flex-direction: column;
@@ -1271,6 +1254,278 @@ footer {
   .bento-card.b4, .bento-card.b5, .bento-card.b6,
   .bento-card.b7 { grid-column: span 1; }
   .hero { padding: 80px 20px 48px; }
+}
+
+/* ── CHECKOUT MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8,5,14,0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.modal {
+  background: rgba(13,9,20,0.96);
+  border: 1px solid var(--b2);
+  border-radius: 24px;
+  padding: 40px;
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.35s cubic-bezier(0.2,0,0.2,1);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+}
+.modal-overlay.open .modal {
+  transform: translateY(0);
+}
+/* Top gradient line */
+.modal::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 10%; right: 10%;
+  height: 1px;
+  background: var(--grad);
+  opacity: 0.7;
+  border-radius: 100px;
+}
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--s);
+  border: 1px solid var(--b);
+  color: var(--td);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 16px;
+  line-height: 1;
+}
+.modal-close:hover { background: var(--s2); color: var(--t); border-color: var(--b2); }
+
+/* Checkout state */
+.modal-screen { display: none; }
+.modal-screen.active { display: block; }
+.modal-eyebrow {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 8px;
+  text-align: center;
+}
+.modal-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--t);
+  text-align: center;
+  margin-bottom: 28px;
+}
+.order-summary {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--b2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+.order-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--tm);
+  padding: 3px 0;
+}
+.order-row .dim { font-size: 11px; color: var(--td); }
+.order-total {
+  border-top: 1px solid var(--b2);
+  margin-top: 10px;
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--t);
+}
+.order-total-price {
+  font-size: 22px;
+  font-weight: 900;
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.modal-field {
+  margin-bottom: 14px;
+}
+.modal-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--td);
+  display: block;
+  margin-bottom: 6px;
+}
+.modal-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--b2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--t);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  appearance: none;
+}
+.modal-input:focus {
+  border-color: rgba(0,212,255,0.5);
+  background: rgba(0,212,255,0.03);
+}
+.modal-input::placeholder { color: var(--td); }
+.modal-input.readonly { opacity: 0.5; cursor: default; }
+.modal-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.modal-pay-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--grad);
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 32px var(--glow-pink);
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.modal-pay-btn:hover { box-shadow: 0 0 48px var(--glow-pink); }
+.modal-secure {
+  font-size: 11px;
+  color: var(--td);
+  text-align: center;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+.modal-back {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--td);
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: color 0.2s;
+  letter-spacing: 0.04em;
+}
+.modal-back:hover { color: var(--tm); }
+
+/* Success state */
+.success-icon {
+  font-size: 52px;
+  text-align: center;
+  margin-bottom: 16px;
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn {
+  from { transform: scale(0.3); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.success-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-align: center;
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+}
+.success-sub {
+  font-size: 14px;
+  color: var(--tm);
+  text-align: center;
+  line-height: 1.7;
+  max-width: 320px;
+  margin: 0 auto 28px;
+}
+.unlocked-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.unlocked-item {
+  background: rgba(100,220,120,0.08);
+  border: 1px solid rgba(100,220,120,0.18);
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--green);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+}
+.modal-dashboard-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--grad);
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 32px var(--glow-pink);
+}
+.modal-dashboard-btn:hover { box-shadow: 0 0 48px var(--glow-pink); }
+
+@media (max-width: 480px) {
+  .modal { padding: 28px 20px; }
+  .unlocked-grid { grid-template-columns: 1fr; }
+  .modal-two-col { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -2258,122 +2513,184 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     });
   }
 
-  document.querySelectorAll('.btn-primary, .nav-cta, .btn-ghost, .pricing-cta').forEach(initButton);
+  document.querySelectorAll('.btn-primary, .nav-cta, .btn-ghost, .pricing-cta, .modal-pay-btn, .modal-dashboard-btn').forEach(initButton);
 })();
 </script>
+
+
+<!-- ── CHECKOUT MODAL ── -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="modal">
+    <button class="modal-close" id="modal-close-btn">✕</button>
+
+    <!-- CHECKOUT STATE -->
+    <div class="modal-screen active" id="modal-checkout">
+      <div class="modal-eyebrow">Checkout</div>
+      <div class="modal-title">Upgrade to Pro</div>
+
+      <div class="order-summary">
+        <div class="order-row">
+          <span>Pulse. Pro</span>
+          <span id="order-billing-label">Monthly</span>
+        </div>
+        <div class="order-row">
+          <span class="dim" id="order-breakdown">£12/month</span>
+          <span class="dim" id="order-subtotal">£12.00</span>
+        </div>
+        <div class="order-total">
+          <span>Total today</span>
+          <span class="order-total-price" id="order-total">£12.00</span>
+        </div>
+      </div>
+
+      <div class="modal-field">
+        <label class="modal-label">Email</label>
+        <input class="modal-input readonly" type="email" placeholder="you@example.com" readonly>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Card number</label>
+        <input class="modal-input" type="text" placeholder="•••• •••• •••• ••••" maxlength="19" id="card-number">
+      </div>
+      <div class="modal-two-col modal-field">
+        <div>
+          <label class="modal-label">Expiry</label>
+          <input class="modal-input" type="text" placeholder="MM / YY" maxlength="7" id="card-expiry">
+        </div>
+        <div>
+          <label class="modal-label">CVC</label>
+          <input class="modal-input" type="text" placeholder="•••" maxlength="3" id="card-cvc">
+        </div>
+      </div>
+
+      <button class="modal-pay-btn btn-primary" id="pay-btn">Pay <span id="pay-amount">£12.00</span> →</button>
+      <p class="modal-secure">🔒 Secured by Stripe · Cancel any time · 14-day money-back guarantee</p>
+      <button class="modal-back" onclick="closeModal()">← Back to pricing</button>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="modal-screen" id="modal-success">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Welcome to Pro</div>
+      <p class="success-sub">Your account is upgraded. Everything is unlocked and ready to go.</p>
+      <div class="unlocked-grid">
+        <div class="unlocked-item">✓ Unlimited campaigns</div>
+        <div class="unlocked-item">✓ Unlimited prospects</div>
+        <div class="unlocked-item">✓ Unlimited AI drafts</div>
+        <div class="unlocked-item">✓ Auto-scheduling</div>
+        <div class="unlocked-item">✓ Full sequences</div>
+        <div class="unlocked-item">✓ All personality packs</div>
+      </div>
+      <button class="modal-dashboard-btn btn-primary">Go to dashboard →</button>
+    </div>
+
+  </div>
+</div>
 
 <script>
-// ── IMAGE WARP — sinusoidal wave, left→right on hover ────────────────
-// Matches the horizontal scan language of the product.
-// Wave front travels left→right, displacing pixel columns vertically.
+// ── CHECKOUT MODAL ──────────────────────────────────────
 (function () {
-  const WAVE_AMPLITUDE  = 6;
-  const WAVE_FREQUENCY  = 2.5;
-  const WAVE_FRONT_WIDTH = 0.35;
-  const DURATION        = 3600;
-  const PEAK_AT         = 0.15;
 
-  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
-  function bellCurve(t) {
-    if (t < PEAK_AT) return easeOut(t / PEAK_AT);
-    return Math.pow(1 - (t - PEAK_AT) / (1 - PEAK_AT), 2.2);
+  const overlay  = document.getElementById('checkout-modal');
+  const closeBtn = document.getElementById('modal-close-btn');
+  const screenCheckout = document.getElementById('modal-checkout');
+  const screenSuccess  = document.getElementById('modal-success');
+  const payBtn   = document.getElementById('pay-btn');
+  const payAmt   = document.getElementById('pay-amount');
+  const orderBilling   = document.getElementById('order-billing-label');
+  const orderBreakdown = document.getElementById('order-breakdown');
+  const orderSubtotal  = document.getElementById('order-subtotal');
+  const orderTotal     = document.getElementById('order-total');
+
+  // Read billing state from the toggle on the page
+  function isAnnual() {
+    const t = document.getElementById('billing-toggle');
+    return t && t.checked;
   }
 
-  function initWarp(wrap) {
-    const img = wrap.querySelector('.warp-src');
-    const cvs = wrap.querySelector('.warp-cvs');
-    const ctx = cvs.getContext('2d');
-    let W, H, offCvs, offCtx, raf, startTs, ready = true;
-
-    function setup() {
-      W = cvs.width  = img.naturalWidth;
-      H = cvs.height = img.naturalHeight;
-      offCvs = document.createElement('canvas');
-      offCvs.width = W; offCvs.height = H;
-      offCtx = offCvs.getContext('2d');
-      offCtx.drawImage(img, 0, 0, W, H);
-      ctx.drawImage(offCvs, 0, 0);
-    }
-
-    if (img.complete && img.naturalWidth) {
-      setup();
+  function updateOrderSummary() {
+    if (isAnnual()) {
+      orderBilling.textContent   = 'Annual';
+      orderBreakdown.textContent = '£7/month × 12';
+      orderSubtotal.textContent  = '£84.00';
+      orderTotal.textContent     = '£84.00';
+      payAmt.textContent         = '£84.00';
     } else {
-      img.addEventListener('load', setup);
+      orderBilling.textContent   = 'Monthly';
+      orderBreakdown.textContent = '£12/month';
+      orderSubtotal.textContent  = '£12.00';
+      orderTotal.textContent     = '£12.00';
+      payAmt.textContent         = '£12.00';
     }
+  }
 
-    function frame(ts) {
-      if (!startTs) startTs = ts;
-      const t = Math.min((ts - startTs) / DURATION, 1);
-      const frontX = easeOut(t);
-      const amp    = bellCurve(t) * WAVE_AMPLITUDE;
+  window.openCheckout = function () {
+    updateOrderSummary();
+    screenCheckout.classList.add('active');
+    screenSuccess.classList.remove('active');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
 
-      if (amp < 0.1 && t > PEAK_AT) {
-        ctx.clearRect(0, 0, W, H);
-        ctx.drawImage(offCvs, 0, 0);
-        startTs = null;
-        return;
-      }
+  window.closeModal = function () {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    // Reset to checkout state after close animation
+    setTimeout(() => {
+      screenCheckout.classList.add('active');
+      screenSuccess.classList.remove('active');
+    }, 300);
+  };
 
-      const srcData = offCtx.getImageData(0, 0, W, H);
-      const src = srcData.data;
-      const outData = ctx.createImageData(W, H);
-      const dst = outData.data;
-      const frontPx = frontX * W;
-      const bandW   = WAVE_FRONT_WIDTH * W;
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeModal();
+  });
 
-      for (let x = 0; x < W; x++) {
-        const distFromFront = (x - frontPx) / bandW;
-        let colAmp = 0;
-        if (distFromFront > -1 && distFromFront < 1) {
-          const fade = Math.cos(distFromFront * Math.PI * 0.5);
-          colAmp = fade * fade * amp;
-        }
-        const phaseShift = (x / W) * Math.PI * 2 * WAVE_FREQUENCY
-                         - frontX * Math.PI * 2 * WAVE_FREQUENCY;
-        const dy = Math.sin(phaseShift) * colAmp;
+  // Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+  });
 
-        for (let y = 0; y < H; y++) {
-          const srcY = Math.max(0, Math.min(H - 1, Math.round(y - dy)));
-          const si = (srcY * W + x) * 4;
-          const di = (y    * W + x) * 4;
-          dst[di]   = src[si];   dst[di+1] = src[si+1];
-          dst[di+2] = src[si+2]; dst[di+3] = src[si+3];
-        }
-      }
+  // Pay button → success state
+  payBtn.addEventListener('click', () => {
+    screenCheckout.classList.remove('active');
+    screenSuccess.classList.add('active');
+  });
 
-      ctx.putImageData(outData, 0, 0);
-      if (t < 1) raf = requestAnimationFrame(frame);
-      else { ctx.clearRect(0,0,W,H); ctx.drawImage(offCvs,0,0); startTs = null; }
-    }
-
-    // Attach to the parent .screen-card
-    const card = wrap.closest('.screen-card');
-    if (!card) return;
-
-    card.addEventListener('mouseenter', () => {
-      if (!ready || !offCvs) return;
-      ready = false;
-      if (raf) cancelAnimationFrame(raf);
-      startTs = null;
-      raf = requestAnimationFrame(frame);
-    });
-    card.addEventListener('mouseleave', () => {
-      setTimeout(() => { ready = true; }, 100);
+  // Card number formatting
+  const cardInput = document.getElementById('card-number');
+  if (cardInput) {
+    cardInput.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '').slice(0, 16);
+      e.target.value = v.replace(/(\d{4})/g, '$1 ').trim();
     });
   }
 
-  // Init after images have had a chance to load
-  function init() {
-    document.querySelectorAll('.warp-img-wrap').forEach(initWarp);
+  // Expiry formatting
+  const expiryInput = document.getElementById('card-expiry');
+  if (expiryInput) {
+    expiryInput.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+      if (v.length >= 3) v = v.slice(0,2) + ' / ' + v.slice(2);
+      e.target.value = v;
+    });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  // Wire up all "Get Pro" / "Start free" / nav CTAs
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.cta-pro, .nav-cta, #pro-cta').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        openCheckout();
+      });
+    });
+    // "Start free" goes to app signup — placeholder href for now
+    document.querySelectorAll('.cta-free').forEach(el => {
+      el.setAttribute('href', 'https://outreach-app-theta.vercel.app/signup');
+    });
+  });
+
 })();
 </script>
-
 </body>
 </html>
