@@ -221,6 +221,11 @@ nav {
 /* Hero content that transitions between variants */
 .hero-content {
   transition: opacity 0.35s ease, transform 0.35s ease;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .hero-content.fading {
   opacity: 0;
@@ -248,7 +253,8 @@ nav {
   color: var(--tm);
   max-width: 480px;
   line-height: 1.65;
-  margin-bottom: 52px;
+  margin: 0 auto 52px;
+  text-align: center;
   animation: fadeUp 0.8s 0.2s ease both;
 }
 .hero-actions {
@@ -649,7 +655,49 @@ nav {
 
 /* ── PRICING ── */
 .pricing { padding: 100px 0; }
-.pricing-header { text-align: center; margin-bottom: 60px; }
+.pricing-header { text-align: center; margin-bottom: 48px; }
+
+/* Billing toggle */
+.billing-toggle-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 56px;
+}
+.billing-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--td);
+  transition: color 0.25s;
+  cursor: pointer;
+  user-select: none;
+}
+.billing-label.active { color: var(--t); }
+.billing-save-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  background: rgba(100,220,120,0.12);
+  border: 1px solid rgba(100,220,120,0.25);
+  border-radius: 100px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--green);
+  margin-left: 6px;
+  vertical-align: middle;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.billing-save-badge.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Pricing grid */
 .pricing-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -688,33 +736,73 @@ nav {
   margin-bottom: 20px;
 }
 .pricing-tier.pro { color: var(--pink); }
+
+/* Price flip animation */
+.pricing-price-wrap {
+  height: 60px;
+  overflow: hidden;
+  margin-bottom: 6px;
+  position: relative;
+}
 .pricing-price {
   font-family: 'Outfit', sans-serif;
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 900;
   letter-spacing: -0.04em;
   color: var(--t);
   line-height: 1;
-  margin-bottom: 6px;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  position: absolute;
+  width: 100%;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+}
+.pricing-price.exit-up {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+.pricing-price.enter-from-below {
+  transform: translateY(100%);
+  opacity: 0;
+}
+.pricing-price.enter-from-below.animate-in {
+  transform: translateY(0);
+  opacity: 1;
 }
 .pricing-price .currency {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
-  vertical-align: super;
-  margin-right: 2px;
   color: var(--tm);
+  margin-bottom: 8px;
 }
 .pricing-price .period {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 400;
   color: var(--td);
   letter-spacing: 0;
+  margin-left: 2px;
 }
 .pricing-desc {
   font-size: 13px;
   color: var(--td);
-  margin-bottom: 32px;
+  margin-bottom: 8px;
   line-height: 1.5;
+  min-height: 20px;
+}
+.pricing-annual-saving {
+  font-size: 12px;
+  color: var(--green);
+  font-weight: 600;
+  margin-bottom: 24px;
+  min-height: 18px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s 0.15s, transform 0.3s 0.15s;
+}
+.pricing-annual-saving.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 .pricing-divider {
   height: 1px;
@@ -764,6 +852,7 @@ nav {
   text-decoration: none;
   cursor: pointer;
   transition: all 0.2s;
+  border: none;
 }
 .pricing-cta.cta-free {
   background: transparent;
@@ -774,7 +863,6 @@ nav {
 .pricing-cta.cta-pro {
   background: var(--grad);
   color: white;
-  border: none;
   box-shadow: 0 0 32px var(--glow-pink);
 }
 .pricing-cta.cta-pro:hover { box-shadow: 0 0 48px var(--glow-pink); }
@@ -1259,13 +1347,33 @@ footer {
         <h2 class="section-headline" style="text-align:center;">Start free. Upgrade when you're ready.</h2>
         <p style="color:var(--tm);font-size:16px;margin-top:16px;max-width:440px;margin-left:auto;margin-right:auto;">No pressure. The free plan is genuinely useful. Pro is there when you want more.</p>
       </div>
+
+      <!-- Billing toggle -->
+      <div class="billing-toggle-wrap reveal">
+        <span class="billing-label active" id="bill-monthly">Monthly</span>
+        <label class="toggle-track">
+          <input type="checkbox" id="billing-toggle">
+          <div class="toggle-rail"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+        <span class="billing-label" id="bill-annual">
+          Annual
+          <span class="billing-save-badge" id="header-save-badge">Save 40%</span>
+        </span>
+      </div>
+
       <div class="pricing-grid reveal">
 
         <!-- Free -->
         <div class="pricing-card" data-scan="cyan">
           <div class="pricing-tier">Free</div>
-          <div class="pricing-price">£0</div>
+          <div class="pricing-price-wrap">
+            <div class="pricing-price" id="free-price">
+              <span class="currency">£</span><span>0</span><span class="period">/month</span>
+            </div>
+          </div>
           <div class="pricing-desc">Get started. No card required.</div>
+          <div class="pricing-annual-saving" id="free-saving">&nbsp;</div>
           <div class="pricing-divider"></div>
           <div class="pricing-features">
             <div class="pricing-feature"><div class="check">✓</div><span>1 campaign</span></div>
@@ -1284,8 +1392,13 @@ footer {
         <div class="pricing-card featured" data-scan="pink">
           <div class="pricing-badge">Most popular</div>
           <div class="pricing-tier pro">Pro</div>
-          <div class="pricing-price"><span class="currency">£</span>8<span class="period">/month</span></div>
-          <div class="pricing-desc">Or £45/year — save two months.</div>
+          <div class="pricing-price-wrap">
+            <div class="pricing-price" id="pro-price">
+              <span class="currency">£</span><span id="pro-amount">12</span><span class="period" id="pro-period">/month</span>
+            </div>
+          </div>
+          <div class="pricing-desc" id="pro-desc">Billed monthly. Cancel any time.</div>
+          <div class="pricing-annual-saving" id="pro-saving">&nbsp;</div>
           <div class="pricing-divider"></div>
           <div class="pricing-features">
             <div class="pricing-feature"><div class="check pro-check">✓</div><span>Unlimited campaigns</span></div>
@@ -1296,7 +1409,7 @@ footer {
             <div class="pricing-feature"><div class="check pro-check">✓</div><span>Everything in Free</span></div>
           </div>
           <div class="btn-ring-wrap" style="display:block;">
-            <a href="#" class="pricing-cta cta-pro">Get Pro →</a>
+            <a href="#" class="pricing-cta cta-pro" id="pro-cta">Get Pro →</a>
           </div>
         </div>
 
@@ -1374,7 +1487,60 @@ footer {
 </footer>
 
 <script>
-// ── HERO VARIANT TOGGLE ────────────────────────────────────
+// ── BILLING TOGGLE — monthly/annual price flip ────────────
+const billingToggle   = document.getElementById('billing-toggle');
+const billMonthly     = document.getElementById('bill-monthly');
+const billAnnual      = document.getElementById('bill-annual');
+const headerSaveBadge = document.getElementById('header-save-badge');
+const proAmount       = document.getElementById('pro-amount');
+const proPeriod       = document.getElementById('pro-period');
+const proDesc         = document.getElementById('pro-desc');
+const proSaving       = document.getElementById('pro-saving');
+const proPriceEl      = document.getElementById('pro-price');
+
+const MONTHLY_PRICE = 12;
+const ANNUAL_TOTAL  = 79;
+const ANNUAL_MONTHLY = (ANNUAL_TOTAL / 12).toFixed(2); // 6.58
+const SAVING_PCT    = Math.round((1 - ANNUAL_TOTAL / (MONTHLY_PRICE * 12)) * 100); // 45
+
+function flipPrice(el, newContent, direction) {
+  // direction: 'up' = going to annual (lower), 'down' = going to monthly (higher)
+  el.style.transition = 'none';
+  el.style.transform  = direction === 'up' ? 'translateY(60%)' : 'translateY(-60%)';
+  el.style.opacity    = '0';
+  el.innerHTML = newContent;
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      el.style.transition = 'transform 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.38s ease';
+      el.style.transform  = 'translateY(0)';
+      el.style.opacity    = '1';
+    });
+  });
+}
+
+billingToggle.addEventListener('change', () => {
+  const isAnnual = billingToggle.checked;
+
+  billMonthly.classList.toggle('active', !isAnnual);
+  billAnnual.classList.toggle('active',   isAnnual);
+  headerSaveBadge.classList.toggle('visible', isAnnual);
+
+  if (isAnnual) {
+    flipPrice(proPriceEl,
+      `<span class="currency">£</span><span>${ANNUAL_MONTHLY}</span><span class="period">/month</span>`,
+      'up');
+    proDesc.textContent    = `£${ANNUAL_TOTAL} billed annually.`;
+    proSaving.textContent  = `You save £${MONTHLY_PRICE * 12 - ANNUAL_TOTAL} a year — that's ${SAVING_PCT}% off`;
+    proSaving.classList.add('visible');
+  } else {
+    flipPrice(proPriceEl,
+      `<span class="currency">£</span><span>${MONTHLY_PRICE}</span><span class="period">/month</span>`,
+      'down');
+    proDesc.textContent = 'Billed monthly. Cancel any time.';
+    proSaving.classList.remove('visible');
+  }
+});
+
 const heroToggle  = document.getElementById('hero-variant-toggle');
 const heroContent = document.getElementById('hero-content');
 const heroHL      = document.getElementById('hero-headline');
