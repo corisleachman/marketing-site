@@ -759,13 +759,12 @@ nav {
 
 /* ── ODOMETER price animation ──
    Each digit is a scrolling reel — 0-9 stacked vertically in a clipped window.
-   translateY scrolls the reel to the target digit.                            */
+   JS measures pixel heights at runtime and drives translateY precisely.       */
 .pricing-price-wrap {
   height: 72px;
   margin-bottom: 6px;
-  position: relative;
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   gap: 0;
 }
 .pricing-price {
@@ -776,55 +775,50 @@ nav {
   color: var(--t);
   line-height: 1;
   display: flex;
-  align-items: baseline;
-  gap: 1px;
+  align-items: flex-start;
+  gap: 0;
 }
 .price-currency {
+  font-family: 'Outfit', sans-serif;
   font-size: 22px;
   font-weight: 600;
   color: var(--tm);
   align-self: flex-start;
-  margin-top: 8px;
+  margin-top: 6px;
   margin-right: 1px;
 }
 .price-period {
+  font-family: 'Outfit', sans-serif;
   font-size: 15px;
   font-weight: 400;
   color: var(--td);
   letter-spacing: 0;
-  margin-left: 3px;
+  margin-left: 4px;
   align-self: flex-end;
-  margin-bottom: 6px;
+  padding-bottom: 4px;
 }
-/* Static characters (decimal point, slash) */
 .price-static {
   font-family: 'Outfit', sans-serif;
   font-size: 56px;
   font-weight: 900;
+  letter-spacing: -0.04em;
   color: var(--tm);
   line-height: 1;
-  align-self: flex-start;
 }
-/* The clipping window for one digit */
 .digit-window {
-  height: 1em; /* one digit tall */
   overflow: hidden;
   position: relative;
-  align-self: flex-start;
+  /* height set by JS */
 }
-/* The reel: all 10 digits stacked */
 .digit-reel {
   display: flex;
   flex-direction: column;
-  transform: translateY(0);
-  transition: transform 0.55s cubic-bezier(0.45, 0, 0.15, 1);
-  will-change: transform;
+  /* transition set by JS — never in CSS so snap-to-start is instant */
 }
 .digit-reel span {
   display: block;
-  line-height: 1;
-  height: 1em;
   text-align: center;
+  /* width/height set by JS */
 }
 .pricing-desc {
   font-size: 13px;
@@ -1533,100 +1527,122 @@ footer {
 
 <script>
 // ── ODOMETER PRICE ENGINE ─────────────────────────────────
-// Each character in the price string gets its own scrolling reel.
-// Digit chars (0-9) scroll through a 10-item column.
-// Static chars (. /) are plain spans — no reel needed.
 (function () {
 
-  const DIGITS      = '0123456789';
-  const DIGIT_H_REM = 1; // 1em per digit — matches .digit-reel span height
+  const DIGITS   = '0123456789';
+  const EASING   = 'cubic-bezier(0.45, 0, 0.15, 1)';
+  const DURATION = 520; // ms per reel
+  const STAGGER  = 45;  // ms between each digit
 
   const priceDigits = document.getElementById('pro-price-digits');
   const proPeriod   = document.getElementById('pro-period');
 
-  // Current reel state: array of { type:'digit'|'static', el, reel, current }
-  let reels = [];
+  let digitH = 0;   // pixel height of one digit — measured after first render
+  let slots   = []; // array of { type, win, reel, pos } for digit slots
 
-  // Build the reel DOM for a string like "12" or "6.58"
+  // Measure digit height from a temporary off-screen element
+  function measureDigitH() {
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;font-family:Outfit,sans-serif;font-size:56px;font-weight:900;line-height:1;';
+    probe.textContent = '0';
+    document.body.appendChild(probe);
+    const h = probe.getBoundingClientRect().height;
+    document.body.removeChild(probe);
+    return Math.ceil(h);
+  }
+
+  // Build reel DOM for a string e.g. "12" or "6.58"
+  // Each digit → clipped window + 10-item reel
+  // Each non-digit (.) → static span
   function buildReels(str) {
+    if (!digitH) digitH = measureDigitH();
     priceDigits.innerHTML = '';
-    reels = [];
+    slots = [];
 
     for (const ch of str) {
       if (DIGITS.includes(ch)) {
-        // Clipping window
+        const idx = DIGITS.indexOf(ch);
+
         const win = document.createElement('div');
         win.className = 'digit-window';
+        win.style.height = digitH + 'px';
+        win.style.width  = 'auto';
 
-        // The reel column: 0–9
         const reel = document.createElement('div');
         reel.className = 'digit-reel';
+        // No transition yet — snap to start position silently
+        reel.style.transition = 'none';
+        reel.style.transform  = `translateY(-${idx * digitH}px)`;
+
         for (const d of DIGITS) {
           const s = document.createElement('span');
           s.textContent = d;
+          s.style.height     = digitH + 'px';
+          s.style.lineHeight = digitH + 'px';
           reel.appendChild(s);
         }
 
         win.appendChild(reel);
         priceDigits.appendChild(win);
-
-        const idx = DIGITS.indexOf(ch);
-        // Set immediately (no transition on build)
-        reel.style.transition = 'none';
-        reel.style.transform  = `translateY(-${idx * DIGIT_H_REM}em)`;
-
-        reels.push({ type: 'digit', win, reel, current: idx });
+        slots.push({ type: 'digit', win, reel, pos: idx });
 
       } else {
-        // Static char (decimal point etc.)
         const s = document.createElement('span');
         s.className   = 'price-static';
         s.textContent = ch;
         priceDigits.appendChild(s);
-        reels.push({ type: 'static', el: s, char: ch });
+        slots.push({ type: 'static', el: s });
       }
     }
   }
 
-  // Animate reels to match a new string.
-  // If lengths differ, rebuild from scratch then animate.
-  function setPrice(str, stagger = 40) {
-    const digits      = str.replace(/[^0-9]/g, '');
-    const currentReels = reels.filter(r => r.type === 'digit');
+  // Animate to new price string
+  function setPrice(str) {
+    if (!digitH) digitH = measureDigitH();
 
-    if (currentReels.length !== digits.length) {
-      // Different structure — rebuild, then animate on next frame
+    const newDigits    = [...str].filter(c => DIGITS.includes(c));
+    const currentSlots = slots.filter(s => s.type === 'digit');
+
+    // If digit count changed, rebuild then animate from top
+    if (newDigits.length !== currentSlots.length) {
       buildReels(str);
-      // Re-enable transitions and animate each reel
+      // Force a layout, then enable transitions and animate each reel
+      // from position 0 (top) down to the correct digit
       requestAnimationFrame(() => {
-        reels.filter(r => r.type === 'digit').forEach((r, i) => {
-          const target = DIGITS.indexOf(str.replace(/[^0-9]/g, '')[i]);
-          setTimeout(() => {
-            r.reel.style.transition = `transform 0.55s cubic-bezier(0.45, 0, 0.15, 1)`;
-            r.reel.style.transform  = `translateY(-${target * DIGIT_H_REM}em)`;
-            r.current = target;
-          }, i * stagger);
+        slots.filter(s => s.type === 'digit').forEach((slot, i) => {
+          const target = DIGITS.indexOf(newDigits[i]);
+          // Start from 0 visually
+          slot.reel.style.transition = 'none';
+          slot.reel.style.transform  = 'translateY(0px)';
+          // After paint, animate down to target
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              slot.reel.style.transition = `transform ${DURATION}ms ${EASING}`;
+              slot.reel.style.transform  = `translateY(-${target * digitH}px)`;
+              slot.pos = target;
+            }, i * STAGGER);
+          });
         });
       });
       return;
     }
 
-    // Same structure — just scroll each reel to its new digit
+    // Same digit count — scroll each existing reel to its new digit
     let di = 0;
-    reels.forEach((r, i) => {
-      if (r.type === 'static') return;
-      const targetChar  = str.replace(/[^0-9]/g, '')[di++];
-      const targetIdx   = DIGITS.indexOf(targetChar);
-      const delay       = i * stagger;
+    slots.forEach((slot) => {
+      if (slot.type !== 'digit') return;
+      const target = DIGITS.indexOf(newDigits[di]);
+      const i      = di;
+      di++;
       setTimeout(() => {
-        r.reel.style.transition = `transform 0.55s cubic-bezier(0.45, 0, 0.15, 1)`;
-        r.reel.style.transform  = `translateY(-${targetIdx * DIGIT_H_REM}em)`;
-        r.current = targetIdx;
-      }, delay);
+        slot.reel.style.transition = `transform ${DURATION}ms ${EASING}`;
+        slot.reel.style.transform  = `translateY(-${target * digitH}px)`;
+        slot.pos = target;
+      }, i * STAGGER);
     });
   }
 
-  // Initialise at £12
+  // Initialise at £12 — build then immediately snap (no animation on load)
   buildReels('12');
 
   // ── BILLING TOGGLE ──────────────────────────────────────
@@ -1636,11 +1652,11 @@ footer {
   const proDesc       = document.getElementById('pro-desc');
   const proSaving     = document.getElementById('pro-saving');
 
-  const MONTHLY_PRICE  = 12;
-  const ANNUAL_TOTAL   = 79;
-  const ANNUAL_MONTHLY = '6.58';
-  const SAVING_PCT     = 45;
-  const SAVING_AMOUNT  = MONTHLY_PRICE * 12 - ANNUAL_TOTAL;
+  const MONTHLY_PRICE   = 12;
+  const ANNUAL_TOTAL    = 79;
+  const ANNUAL_MONTHLY  = '6.58';
+  const SAVING_PCT      = 45;
+  const SAVING_AMOUNT   = MONTHLY_PRICE * 12 - ANNUAL_TOTAL;
 
   billingToggle.addEventListener('change', () => {
     const isAnnual = billingToggle.checked;
@@ -1650,14 +1666,14 @@ footer {
 
     if (isAnnual) {
       setPrice(ANNUAL_MONTHLY);
-      proPeriod.textContent  = '/mo';
-      proDesc.textContent    = `£${ANNUAL_TOTAL} billed annually.`;
-      proSaving.textContent  = `You save £${SAVING_AMOUNT} a year — that's ${SAVING_PCT}% off`;
+      proPeriod.textContent = '/mo';
+      proDesc.textContent   = `£${ANNUAL_TOTAL} billed annually.`;
+      proSaving.textContent = `You save £${SAVING_AMOUNT} a year — that's ${SAVING_PCT}% off`;
       proSaving.classList.add('visible');
     } else {
       setPrice(String(MONTHLY_PRICE));
-      proPeriod.textContent  = '/month';
-      proDesc.textContent    = 'Billed monthly. Cancel any time.';
+      proPeriod.textContent = '/month';
+      proDesc.textContent   = 'Billed monthly. Cancel any time.';
       proSaving.classList.remove('visible');
     }
   });
