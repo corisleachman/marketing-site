@@ -758,8 +758,9 @@ nav {
 .pricing-tier.pro { color: var(--pink); }
 
 /* ── DRUM ROLL price animation ──
-   Numbers live on a virtual cylinder — old face tips away (rotateX negative),
-   new face rolls up from behind. Pure CSS 3D transform on the digit wrapper.   */
+   Two stacked price elements inside the wrap.
+   Active one sits at rotateX(0). On toggle, active tips away,
+   standby rolls in. No cloning — same two nodes always.        */
 .pricing-price-wrap {
   height: 68px;
   perspective: 300px;
@@ -777,24 +778,31 @@ nav {
   display: flex;
   align-items: baseline;
   gap: 3px;
-  transform-origin: center 34px; /* pivot at mid-height — centre of the drum */
+  position: absolute;
+  top: 0; left: 0;
+  transform-origin: center 34px;
   backface-visibility: hidden;
+  transform: rotateX(0deg);
+  opacity: 1;
+  pointer-events: none;
 }
-/* Outgoing: tip forward off the top of the drum */
-.pricing-price.drum-exit {
-  animation: drumExit 0.42s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+.pricing-price.behind {
+  transform: rotateX(70deg);
+  opacity: 0;
 }
-/* Incoming: roll up from behind the bottom */
-.pricing-price.drum-enter {
-  animation: drumEnter 0.42s cubic-bezier(0.2, 0, 0.4, 1) forwards;
+.pricing-price.exit {
+  animation: drumExit 0.38s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+.pricing-price.enter {
+  animation: drumEnter 0.38s cubic-bezier(0.2, 0, 0.4, 1) forwards;
 }
 @keyframes drumExit {
-  0%   { transform: rotateX(0deg);    opacity: 1; }
-  100% { transform: rotateX(-70deg);  opacity: 0; }
+  0%   { transform: rotateX(0deg);   opacity: 1; }
+  100% { transform: rotateX(-72deg); opacity: 0; }
 }
 @keyframes drumEnter {
-  0%   { transform: rotateX(70deg);   opacity: 0; }
-  100% { transform: rotateX(0deg);    opacity: 1; }
+  0%   { transform: rotateX(72deg);  opacity: 0; }
+  100% { transform: rotateX(0deg);   opacity: 1; }
 }
 .pricing-price .currency {
   font-size: 22px;
@@ -1419,8 +1427,11 @@ footer {
           <div class="pricing-badge">Most popular</div>
           <div class="pricing-tier pro">Pro</div>
           <div class="pricing-price-wrap">
-            <div class="pricing-price" id="pro-price">
-              <span class="currency">£</span><span id="pro-amount">12</span><span class="period" id="pro-period">/month</span>
+            <div class="pricing-price" id="pro-price-a">
+              <span class="currency">£</span><span>12</span><span class="period">/month</span>
+            </div>
+            <div class="pricing-price behind" id="pro-price-b">
+              <span class="currency">£</span><span>6.58</span><span class="period">/mo</span>
             </div>
           </div>
           <div class="pricing-desc" id="pro-desc">Billed monthly. Cancel any time.</div>
@@ -1514,62 +1525,69 @@ footer {
 
 <script>
 // ── BILLING TOGGLE — drum-roll price animation ────────────
-const billingToggle   = document.getElementById('billing-toggle');
-const billMonthly     = document.getElementById('bill-monthly');
-const billAnnual      = document.getElementById('bill-annual');
-const proDesc         = document.getElementById('pro-desc');
-const proSaving       = document.getElementById('pro-saving');
-const proPriceEl      = document.getElementById('pro-price');
+const billingToggle = document.getElementById('billing-toggle');
+const billMonthly   = document.getElementById('bill-monthly');
+const billAnnual    = document.getElementById('bill-annual');
+const proDesc       = document.getElementById('pro-desc');
+const proSaving     = document.getElementById('pro-saving');
+const priceA        = document.getElementById('pro-price-a'); // monthly — starts visible
+const priceB        = document.getElementById('pro-price-b'); // annual  — starts behind
 
 const MONTHLY_PRICE  = 12;
 const ANNUAL_TOTAL   = 79;
-const ANNUAL_MONTHLY = (ANNUAL_TOTAL / 12).toFixed(2);
-const SAVING_PCT     = Math.round((1 - ANNUAL_TOTAL / (MONTHLY_PRICE * 12)) * 100);
+const ANNUAL_MONTHLY = '6.58';
+const SAVING_PCT     = 45;
+const SAVING_AMOUNT  = MONTHLY_PRICE * 12 - ANNUAL_TOTAL;
 
-function drumRoll(el, newHTML) {
-  // Clone current state as the exiting face
-  const exiting = el.cloneNode(true);
-  exiting.removeAttribute('id');
-  el.parentNode.insertBefore(exiting, el);
+let isAnnual = false;
+let animating = false;
 
-  // Set up incoming (hidden, rotated back)
-  el.innerHTML = newHTML;
-  el.style.transform = 'rotateX(70deg)';
-  el.style.opacity   = '0';
-  el.style.animation = 'none';
+function drumSwap(outEl, inEl) {
+  if (animating) return;
+  animating = true;
 
-  // Kick off exit on clone, enter on el
-  requestAnimationFrame(() => {
-    exiting.classList.add('drum-exit');
-    requestAnimationFrame(() => {
-      el.style.transform = '';
-      el.style.opacity   = '';
-      el.classList.remove('drum-enter');
-      void el.offsetWidth;
-      el.classList.add('drum-enter');
-    });
-  });
+  // Clear any leftover animation classes
+  outEl.classList.remove('exit', 'enter', 'behind');
+  inEl.classList.remove('exit', 'enter', 'behind');
 
-  // Remove clone after animation
-  exiting.addEventListener('animationend', () => exiting.remove(), { once: true });
-  el.addEventListener('animationend', () => el.classList.remove('drum-enter'), { once: true });
+  // inEl starts behind the drum
+  inEl.style.transform = 'rotateX(72deg)';
+  inEl.style.opacity   = '0';
+  inEl.style.animation = 'none';
+
+  // Trigger exit on outEl
+  outEl.classList.add('exit');
+
+  // After a short delay, kick in the entering element
+  setTimeout(() => {
+    inEl.style.transform = '';
+    inEl.style.opacity   = '';
+    inEl.style.animation = '';
+    inEl.classList.add('enter');
+  }, 80);
+
+  // Clean up after animation completes
+  setTimeout(() => {
+    outEl.classList.remove('exit');
+    outEl.classList.add('behind');
+    inEl.classList.remove('enter');
+    animating = false;
+  }, 480);
 }
 
 billingToggle.addEventListener('change', () => {
-  const isAnnual = billingToggle.checked;
+  isAnnual = billingToggle.checked;
 
   billMonthly.classList.toggle('active', !isAnnual);
   billAnnual.classList.toggle('active',   isAnnual);
 
   if (isAnnual) {
-    drumRoll(proPriceEl,
-      `<span class="currency">£</span><span>${ANNUAL_MONTHLY}</span><span class="period">/mo</span>`);
-    proDesc.textContent   = `£${ANNUAL_TOTAL} billed annually.`;
-    proSaving.textContent = `You save £${MONTHLY_PRICE * 12 - ANNUAL_TOTAL} a year — that's ${SAVING_PCT}% off`;
+    drumSwap(priceA, priceB);
+    proDesc.textContent  = `£${ANNUAL_TOTAL} billed annually.`;
+    proSaving.textContent = `You save £${SAVING_AMOUNT} a year — that's ${SAVING_PCT}% off`;
     proSaving.classList.add('visible');
   } else {
-    drumRoll(proPriceEl,
-      `<span class="currency">£</span><span>${MONTHLY_PRICE}</span><span class="period">/month</span>`);
+    drumSwap(priceB, priceA);
     proDesc.textContent = 'Billed monthly. Cancel any time.';
     proSaving.classList.remove('visible');
   }
