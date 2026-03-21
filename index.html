@@ -757,16 +757,16 @@ nav {
 }
 .pricing-tier.pro { color: var(--pink); }
 
-/* ── DRUM ROLL price animation ──
-   Two stacked price elements inside the wrap.
-   Active one sits at rotateX(0). On toggle, active tips away,
-   standby rolls in. No cloning — same two nodes always.        */
+/* ── ODOMETER price animation ──
+   Each digit is a scrolling reel — 0-9 stacked vertically in a clipped window.
+   translateY scrolls the reel to the target digit.                            */
 .pricing-price-wrap {
-  height: 68px;
-  perspective: 300px;
+  height: 72px;
   margin-bottom: 6px;
   position: relative;
-  overflow: visible;
+  display: flex;
+  align-items: baseline;
+  gap: 0;
 }
 .pricing-price {
   font-family: 'Outfit', sans-serif;
@@ -777,45 +777,54 @@ nav {
   line-height: 1;
   display: flex;
   align-items: baseline;
-  gap: 3px;
-  position: absolute;
-  top: 0; left: 0;
-  transform-origin: center 34px;
-  backface-visibility: hidden;
-  transform: rotateX(0deg);
-  opacity: 1;
-  pointer-events: none;
+  gap: 1px;
 }
-.pricing-price.behind {
-  transform: rotateX(70deg);
-  opacity: 0;
-}
-.pricing-price.exit {
-  animation: drumExit 0.38s cubic-bezier(0.4, 0, 0.6, 1) forwards;
-}
-.pricing-price.enter {
-  animation: drumEnter 0.38s cubic-bezier(0.2, 0, 0.4, 1) forwards;
-}
-@keyframes drumExit {
-  0%   { transform: rotateX(0deg);   opacity: 1; }
-  100% { transform: rotateX(-72deg); opacity: 0; }
-}
-@keyframes drumEnter {
-  0%   { transform: rotateX(72deg);  opacity: 0; }
-  100% { transform: rotateX(0deg);   opacity: 1; }
-}
-.pricing-price .currency {
+.price-currency {
   font-size: 22px;
   font-weight: 600;
   color: var(--tm);
-  margin-bottom: 10px;
+  align-self: flex-start;
+  margin-top: 8px;
+  margin-right: 1px;
 }
-.pricing-price .period {
+.price-period {
   font-size: 15px;
   font-weight: 400;
   color: var(--td);
   letter-spacing: 0;
-  margin-left: 2px;
+  margin-left: 3px;
+  align-self: flex-end;
+  margin-bottom: 6px;
+}
+/* Static characters (decimal point, slash) */
+.price-static {
+  font-family: 'Outfit', sans-serif;
+  font-size: 56px;
+  font-weight: 900;
+  color: var(--tm);
+  line-height: 1;
+  align-self: flex-start;
+}
+/* The clipping window for one digit */
+.digit-window {
+  height: 1em; /* one digit tall */
+  overflow: hidden;
+  position: relative;
+  align-self: flex-start;
+}
+/* The reel: all 10 digits stacked */
+.digit-reel {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(0);
+  transition: transform 0.55s cubic-bezier(0.45, 0, 0.15, 1);
+  will-change: transform;
+}
+.digit-reel span {
+  display: block;
+  line-height: 1;
+  height: 1em;
+  text-align: center;
 }
 .pricing-desc {
   font-size: 13px;
@@ -1426,13 +1435,12 @@ footer {
         <div class="pricing-card featured" data-scan="pink">
           <div class="pricing-badge">Most popular</div>
           <div class="pricing-tier pro">Pro</div>
-          <div class="pricing-price-wrap">
-            <div class="pricing-price" id="pro-price-a">
-              <span class="currency">£</span><span>12</span><span class="period">/month</span>
+          <div class="pricing-price-wrap" id="pro-price-wrap">
+            <span class="price-currency">£</span>
+            <div class="pricing-price" id="pro-price-digits">
+              <!-- digit reels injected by JS -->
             </div>
-            <div class="pricing-price behind" id="pro-price-b">
-              <span class="currency">£</span><span>6.58</span><span class="period">/mo</span>
-            </div>
+            <span class="price-period" id="pro-period">/month</span>
           </div>
           <div class="pricing-desc" id="pro-desc">Billed monthly. Cancel any time.</div>
           <div class="pricing-annual-saving" id="pro-saving">&nbsp;</div>
@@ -1524,74 +1532,137 @@ footer {
 </footer>
 
 <script>
-// ── BILLING TOGGLE — drum-roll price animation ────────────
-const billingToggle = document.getElementById('billing-toggle');
-const billMonthly   = document.getElementById('bill-monthly');
-const billAnnual    = document.getElementById('bill-annual');
-const proDesc       = document.getElementById('pro-desc');
-const proSaving     = document.getElementById('pro-saving');
-const priceA        = document.getElementById('pro-price-a'); // monthly — starts visible
-const priceB        = document.getElementById('pro-price-b'); // annual  — starts behind
+// ── ODOMETER PRICE ENGINE ─────────────────────────────────
+// Each character in the price string gets its own scrolling reel.
+// Digit chars (0-9) scroll through a 10-item column.
+// Static chars (. /) are plain spans — no reel needed.
+(function () {
 
-const MONTHLY_PRICE  = 12;
-const ANNUAL_TOTAL   = 79;
-const ANNUAL_MONTHLY = '6.58';
-const SAVING_PCT     = 45;
-const SAVING_AMOUNT  = MONTHLY_PRICE * 12 - ANNUAL_TOTAL;
+  const DIGITS      = '0123456789';
+  const DIGIT_H_REM = 1; // 1em per digit — matches .digit-reel span height
 
-let isAnnual = false;
-let animating = false;
+  const priceDigits = document.getElementById('pro-price-digits');
+  const proPeriod   = document.getElementById('pro-period');
 
-function drumSwap(outEl, inEl) {
-  if (animating) return;
-  animating = true;
+  // Current reel state: array of { type:'digit'|'static', el, reel, current }
+  let reels = [];
 
-  // Clear any leftover animation classes
-  outEl.classList.remove('exit', 'enter', 'behind');
-  inEl.classList.remove('exit', 'enter', 'behind');
+  // Build the reel DOM for a string like "12" or "6.58"
+  function buildReels(str) {
+    priceDigits.innerHTML = '';
+    reels = [];
 
-  // inEl starts behind the drum
-  inEl.style.transform = 'rotateX(72deg)';
-  inEl.style.opacity   = '0';
-  inEl.style.animation = 'none';
+    for (const ch of str) {
+      if (DIGITS.includes(ch)) {
+        // Clipping window
+        const win = document.createElement('div');
+        win.className = 'digit-window';
 
-  // Trigger exit on outEl
-  outEl.classList.add('exit');
+        // The reel column: 0–9
+        const reel = document.createElement('div');
+        reel.className = 'digit-reel';
+        for (const d of DIGITS) {
+          const s = document.createElement('span');
+          s.textContent = d;
+          reel.appendChild(s);
+        }
 
-  // After a short delay, kick in the entering element
-  setTimeout(() => {
-    inEl.style.transform = '';
-    inEl.style.opacity   = '';
-    inEl.style.animation = '';
-    inEl.classList.add('enter');
-  }, 80);
+        win.appendChild(reel);
+        priceDigits.appendChild(win);
 
-  // Clean up after animation completes
-  setTimeout(() => {
-    outEl.classList.remove('exit');
-    outEl.classList.add('behind');
-    inEl.classList.remove('enter');
-    animating = false;
-  }, 480);
-}
+        const idx = DIGITS.indexOf(ch);
+        // Set immediately (no transition on build)
+        reel.style.transition = 'none';
+        reel.style.transform  = `translateY(-${idx * DIGIT_H_REM}em)`;
 
-billingToggle.addEventListener('change', () => {
-  isAnnual = billingToggle.checked;
+        reels.push({ type: 'digit', win, reel, current: idx });
 
-  billMonthly.classList.toggle('active', !isAnnual);
-  billAnnual.classList.toggle('active',   isAnnual);
-
-  if (isAnnual) {
-    drumSwap(priceA, priceB);
-    proDesc.textContent  = `£${ANNUAL_TOTAL} billed annually.`;
-    proSaving.textContent = `You save £${SAVING_AMOUNT} a year — that's ${SAVING_PCT}% off`;
-    proSaving.classList.add('visible');
-  } else {
-    drumSwap(priceB, priceA);
-    proDesc.textContent = 'Billed monthly. Cancel any time.';
-    proSaving.classList.remove('visible');
+      } else {
+        // Static char (decimal point etc.)
+        const s = document.createElement('span');
+        s.className   = 'price-static';
+        s.textContent = ch;
+        priceDigits.appendChild(s);
+        reels.push({ type: 'static', el: s, char: ch });
+      }
+    }
   }
-});
+
+  // Animate reels to match a new string.
+  // If lengths differ, rebuild from scratch then animate.
+  function setPrice(str, stagger = 40) {
+    const digits      = str.replace(/[^0-9]/g, '');
+    const currentReels = reels.filter(r => r.type === 'digit');
+
+    if (currentReels.length !== digits.length) {
+      // Different structure — rebuild, then animate on next frame
+      buildReels(str);
+      // Re-enable transitions and animate each reel
+      requestAnimationFrame(() => {
+        reels.filter(r => r.type === 'digit').forEach((r, i) => {
+          const target = DIGITS.indexOf(str.replace(/[^0-9]/g, '')[i]);
+          setTimeout(() => {
+            r.reel.style.transition = `transform 0.55s cubic-bezier(0.45, 0, 0.15, 1)`;
+            r.reel.style.transform  = `translateY(-${target * DIGIT_H_REM}em)`;
+            r.current = target;
+          }, i * stagger);
+        });
+      });
+      return;
+    }
+
+    // Same structure — just scroll each reel to its new digit
+    let di = 0;
+    reels.forEach((r, i) => {
+      if (r.type === 'static') return;
+      const targetChar  = str.replace(/[^0-9]/g, '')[di++];
+      const targetIdx   = DIGITS.indexOf(targetChar);
+      const delay       = i * stagger;
+      setTimeout(() => {
+        r.reel.style.transition = `transform 0.55s cubic-bezier(0.45, 0, 0.15, 1)`;
+        r.reel.style.transform  = `translateY(-${targetIdx * DIGIT_H_REM}em)`;
+        r.current = targetIdx;
+      }, delay);
+    });
+  }
+
+  // Initialise at £12
+  buildReels('12');
+
+  // ── BILLING TOGGLE ──────────────────────────────────────
+  const billingToggle = document.getElementById('billing-toggle');
+  const billMonthly   = document.getElementById('bill-monthly');
+  const billAnnual    = document.getElementById('bill-annual');
+  const proDesc       = document.getElementById('pro-desc');
+  const proSaving     = document.getElementById('pro-saving');
+
+  const MONTHLY_PRICE  = 12;
+  const ANNUAL_TOTAL   = 79;
+  const ANNUAL_MONTHLY = '6.58';
+  const SAVING_PCT     = 45;
+  const SAVING_AMOUNT  = MONTHLY_PRICE * 12 - ANNUAL_TOTAL;
+
+  billingToggle.addEventListener('change', () => {
+    const isAnnual = billingToggle.checked;
+
+    billMonthly.classList.toggle('active', !isAnnual);
+    billAnnual.classList.toggle('active',   isAnnual);
+
+    if (isAnnual) {
+      setPrice(ANNUAL_MONTHLY);
+      proPeriod.textContent  = '/mo';
+      proDesc.textContent    = `£${ANNUAL_TOTAL} billed annually.`;
+      proSaving.textContent  = `You save £${SAVING_AMOUNT} a year — that's ${SAVING_PCT}% off`;
+      proSaving.classList.add('visible');
+    } else {
+      setPrice(String(MONTHLY_PRICE));
+      proPeriod.textContent  = '/month';
+      proDesc.textContent    = 'Billed monthly. Cancel any time.';
+      proSaving.classList.remove('visible');
+    }
+  });
+
+})();
 
 const heroToggle  = document.getElementById('hero-variant-toggle');
 const heroContent = document.getElementById('hero-content');
