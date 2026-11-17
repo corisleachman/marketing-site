@@ -806,9 +806,10 @@ nav {
 /* Pricing grid */
 .pricing-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  max-width: 760px;
+  max-width: 1080px;
+  align-items: stretch;
   margin: 0 auto;
 }
 
@@ -819,8 +820,10 @@ nav {
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255,255,255,0.09);
   border-radius: 20px;
-  padding: 40px 36px;
+  padding: 40px 32px;
   position: relative;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   transition: border-color 0.3s, box-shadow 0.3s;
   box-shadow: 0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07);
@@ -871,6 +874,9 @@ nav {
   margin-bottom: 20px;
 }
 .pricing-tier.pro { color: var(--pink); }
+.pricing-tier.plus { color: var(--cyan, #22d3ee); }
+.pricing-card .pricing-features { flex-grow: 1; }
+@media (min-width: 769px) and (max-width: 1024px) { .pricing-card { padding: 32px 22px; } }
 
 /* ── ODOMETER price animation ──
    Each digit is a scrolling reel — 0-9 stacked vertically in a clipped window.
@@ -1867,7 +1873,7 @@ footer {
         </label>
         <span class="billing-label" id="bill-annual">
           Annual
-          <span class="billing-save-badge" id="header-save-badge">Save 42%</span>
+          <span class="billing-save-badge" id="header-save-badge">Save up to 42%</span>
         </span>
       </div>
 
@@ -1924,8 +1930,31 @@ footer {
           </div>
         </div>
 
+        <!-- Pro Plus -->
+        <div class="pricing-card" data-scan="cyan">
+          <div class="pricing-tier plus">Pro Plus</div>
+          <div class="pricing-price-wrap">
+            <div class="pricing-price">
+              <span class="currency">£</span><span id="plus-price">29</span><span class="period" id="plus-period">/month</span>
+            </div>
+          </div>
+          <div class="pricing-desc" id="plus-desc">Billed monthly. Cancel any time.</div>
+          <div class="pricing-annual-saving" id="plus-saving">&nbsp;</div>
+          <div class="pricing-divider"></div>
+          <div class="pricing-features">
+<div class="pricing-feature"><div class="check">✓</div><span>Unlimited campaigns</span></div>
+<div class="pricing-feature"><div class="check">✓</div><span>Up to 10,000 prospects</span></div>
+<div class="pricing-feature"><div class="check">✓</div><span>Highest limits across Pulse</span></div>
+<div class="pricing-feature"><div class="check">✓</div><span>Full automation set</span></div>
+<div class="pricing-feature"><div class="check">✓</div><span>Everything in Pro Light</span></div>
+          </div>
+          <div class="btn-ring-wrap" style="display:block;">
+            <a href="https://app.pulse-outreach.co.uk/pricing" class="pricing-cta cta-free">Get Pro Plus →</a>
+          </div>
+        </div>
+
       </div>
-      <p class="reveal" style="text-align:center;font-size:14px;color:var(--tm);margin-top:28px;">Need more? <strong style="color:var(--t);">Pro Plus</strong> gives you unlimited campaigns and up to 10,000 prospects for £29/month, or £19/month billed annually. <a href="https://app.pulse-outreach.co.uk/pricing" style="color:var(--t);">See all plans →</a></p>
+      
     </div>
   </section>
 
@@ -2157,14 +2186,28 @@ footer {
       proDesc.textContent   = `£${ANNUAL_TOTAL} billed annually.`;
       proSaving.textContent = `You save £${SAVING_AMOUNT} a year — that's ${SAVING_PCT}% off`;
       proSaving.classList.add('visible');
+      setPlus(true);
     } else {
       setPrice(String(MONTHLY_PRICE));
       setTimeout(updateLeadingZero, 50);
       proPeriod.textContent = '/month';
       proDesc.textContent   = 'Billed monthly. Cancel any time.';
       proSaving.classList.remove('visible');
+      setPlus(false);
     }
   });
+
+  // Pro Plus: £29/month, or £228/year (£19/month) — saves £120 (34%)
+  function setPlus(isAnnual) {
+    const price = document.getElementById('plus-price');
+    if (!price) return;
+    price.textContent = isAnnual ? '19' : '29';
+    document.getElementById('plus-period').textContent = isAnnual ? '/mo' : '/month';
+    document.getElementById('plus-desc').textContent = isAnnual ? '£228 billed annually.' : 'Billed monthly. Cancel any time.';
+    const saving = document.getElementById('plus-saving');
+    saving.textContent = isAnnual ? "You save £120 a year — that's 34% off" : '\u00a0';
+    saving.classList.toggle('visible', isAnnual);
+  }
 
 })();
 
